@@ -49,7 +49,7 @@ PCLPP_MemoryReference& GetReference(PCLPP* pclpp, std::string token)
 void InputPointerClass(PCLPP* pclpp, const std::string& token)
 {
     std::string other = pclpp->tokenizer.tokens.Advance();
-    if (isdigit(token[0]))
+    if (isdigit(other[0]))
     {
         pclpp->blocks.back().assembly.MOVRImm(0, stoi(other));
     }

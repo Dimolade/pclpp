@@ -5,9 +5,13 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
     {
+        PCLPP->blocks.back().assembly.PUSH(1 << 0);
         PCLPP->UnallocateBlock(PCLPP->blocks.back());
+        PCLPP->blocks.back().assembly.MOVRImm(0,0);
+        PCLPP->blocks.back().assembly.POP(1 << 0);
         PCLPP->blocks.back().assembly.POP_LR();
         PCLPP->blocks.back().assembly.BXLR();
+        PCLPP->inBlock = false;
         return;
     }
     if (token != "main") return;
@@ -16,6 +20,6 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     PCLPP->inBlock = true;
     PCLPP_Block& b = PCLPP->blocks.emplace_back();
     b.type = PCLPP_Block_Type::Main;
-    b.assembly.PUSH_LR();
+    PCLPP->blocks.back().assembly.PUSH_LR();
     b.assembly.MOVRImm(0, -1);
 }

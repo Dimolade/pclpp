@@ -67,7 +67,6 @@ void InitClassRecursive(PCLPP_Class& cls, PCLPP_MemoryReference& parent, Assembl
         if (childClass.isByteClass)
         {
             PCLPP->LoadClass(childClass, assembly);
-            b.assembly.MOVRImm(0, PCLPP->localVarCount);
             b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
             b.myLocals.push_back(PCLPP->localVarCount);
             PCLPP->localVarCount++;
