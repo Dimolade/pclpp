@@ -20,8 +20,6 @@
 #include "../CTRLF/CTRL/Arch.h"
 #endif
 
-#include "pclpp_std.hpp"
-
 #define assemblinizer_littleEndian
 
 class Assembly
