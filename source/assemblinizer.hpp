@@ -1,5 +1,4 @@
-// main source:
-// https://kib.kiev.ua/x86docs/ARM/ARMARMv5/DDI0100F-02.pdf
+// https://armconverter.com
 
 #include <vector>
 #include <cstdint>
@@ -20,6 +19,8 @@
 #include "../CTRLF/CTRL/CodeAllocator.h"
 #include "../CTRLF/CTRL/Arch.h"
 #endif
+
+#include "pclpp_std.hpp"
 
 #define assemblinizer_littleEndian
 
@@ -98,15 +99,11 @@ public:
 
     inline void BX(uint8_t reg)
     {
-        //11FF2FE1 r1
-        //10FF2FE1 r0
         emit32(0xE12FFF10 | (reg & 0xF));
     }
 
     inline void BLX(uint8_t reg)
     {
-        //11FF2FE1 r1
-        //10FF2FE1 r0
         emit32(0xE12FFF30 | (reg & 0xF));
     }
 
@@ -151,8 +148,6 @@ public:
 
     inline void MOVRImm(uint8_t reg, uint32_t val)
     {
-        //MOV: 0x0000A0E3
-        //MVN: 0x0000E0E3
         if (EncodeImm(val, reg, 0xE3A00000))
             return;
 
@@ -176,8 +171,6 @@ public:
 
     inline void ADDRImm(uint8_t reg, uint32_t val)
     {
-        //ADD: 0x000080E2
-        //SUB: 0x000040E2
         if (EncodeImm(val, reg, 0xE2800000))
             return;
 
@@ -206,8 +199,6 @@ public:
 
     inline void SUBRImm(uint8_t reg, uint32_t val)
     {
-        //ADD: 0x000080E2
-        //SUB: 0x000040E2
         if (EncodeImm(val, reg, 0xE2400000))
             return;
 
