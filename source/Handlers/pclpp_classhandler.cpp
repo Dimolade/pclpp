@@ -52,7 +52,7 @@ void HandleClass(PCLPP* PCLPP, const std::string& token)
     }
 }
 
-void InitClassRecursive(PCLPP_Class& cls, PCLPP_MemoryReference& parent, Assembly& assembly, PCLPP* PCLPP)
+void InitClassRecursive(PCLPP_Class& cls, PCLPP_MemoryReference& parent, Assembly& assembly, PCLPP* PCLPP, PCLPP_Block& b)
 {
     for (PCLPP_Variable& var : cls.variables)
     {
@@ -62,14 +62,20 @@ void InitClassRecursive(PCLPP_Class& cls, PCLPP_MemoryReference& parent, Assembl
 
         child.name = var.name;
         child.size = PCLPP->GetTypeSize(var.type);
+        child.index = PCLPP->localVarCount;
 
         if (childClass.isByteClass)
         {
             PCLPP->LoadClass(childClass, assembly);
+            b.assembly.MOVRImm(0, PCLPP->localVarCount);
+            b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+            b.myLocals.push_back(PCLPP->localVarCount);
+            PCLPP->localVarCount++;
         }
         else
         {
-            InitClassRecursive(childClass, child, assembly, PCLPP);
+            PCLPP->localVarCount++;
+            InitClassRecursive(childClass, child, assembly, PCLPP, b);
         }
     }
 }
@@ -92,7 +98,7 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
         b.assembly.POP(1 << 10);
         return;
     }
-    InitClassRecursive(c, parent, b.assembly, PCLPP);
+    InitClassRecursive(c, parent, b.assembly, PCLPP, b);
     b.assembly.POP(1 << 10);
     b.assembly.MOVRR(0,10);
     b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);

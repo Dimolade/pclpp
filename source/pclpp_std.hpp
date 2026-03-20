@@ -2,6 +2,56 @@
 #include <stdlib.h>
 #include <cstdint>
 #include <vector>
+#include <stack>
+
+class pclpp_varpool
+{
+public:
+    pclpp_varpool(uint16_t capacity)
+        : data(capacity), used(capacity, false)
+    {
+        for (uint16_t i = 0; i < capacity; i++)
+        {
+            freeList.push(i);
+        }
+    }
+
+    uint16_t allocate(uint32_t value)
+    {
+        if (freeList.empty())
+            throw std::runtime_error("Out of memory");
+
+        uint16_t index = freeList.top();
+        freeList.pop();
+
+        data[index] = value;
+        used[index] = true;
+
+        return index;
+    }
+
+    void free(uint16_t index)
+    {
+        if (!used[index])
+            throw std::runtime_error("Double free");
+
+        used[index] = false;
+        freeList.push(index);
+    }
+
+    uint32_t& operator[](uint16_t index)
+    {
+        if (!used[index])
+            throw std::runtime_error("Accessing freed slot");
+
+        return data[index];
+    }
+
+private:
+    std::vector<uint32_t> data;
+    std::vector<bool> used;
+    std::stack<uint16_t> freeList;
+};
 
 class pclpp_std
 {
@@ -16,24 +66,22 @@ public:
         return (uint32_t)calloc(elements, size);
     }
 
-    static inline std::vector<uint32_t> localvariablemanager;
+    static inline pclpp_varpool localvariablemanager(65535);
 
-    static uint8_t AllocateLocal(uint32_t value)
+    static uint16_t AllocateLocal(uint32_t value)
     {
-        uint32_t& var = localvariablemanager.emplace_back();
-        uint8_t pos = localvariablemanager.size()-1;
-        var = value;
-        return pos;
+        uint16_t index = localvariablemanager.allocate(value);
+        return index;
     }
 
-    static uint32_t GetLocal(uint8_t index)
+    static uint32_t GetLocal(uint16_t index)
     {
         return localvariablemanager[index];
     }
 
-    static void UnallocateLocal(uint8_t index)
+    static void UnallocateLocal(uint16_t index)
     {
-        localvariablemanager.erase(localvariablemanager.begin()+index);
+        localvariablemanager.free(index);
     }
 
     static void Free(uint32_t address)

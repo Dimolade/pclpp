@@ -136,7 +136,7 @@ enum PCLPP_Block_Type
 class PCLPP_MemoryReference
 {
 public:
-    uint8_t index;
+    uint16_t index;
     uint8_t size;
     std::string name;
     std::vector<PCLPP_MemoryReference> children;
@@ -148,7 +148,7 @@ public:
     PCLPP_Block_Type type = PCLPP_Block_Type::Function;
     std::vector<PCLPP_MemoryReference> memoryReferences;
     Assembly assembly;
-    std::vector<uint8_t> myLocals;
+    std::vector<uint16_t> myLocals;
 };
 
 class PCLPP_Variable
@@ -178,7 +178,7 @@ public:
     std::vector<PCLPP_Block> blocks;
     std::vector<PCLPP_Class> classes;
     bool inBlock = false;
-    uint8_t localVarCount = 0;
+    uint16_t localVarCount = 0;
 
     uint32_t GetTypeSize(std::string type)
     {
@@ -272,7 +272,7 @@ public:
 
     void UnallocateBlock(PCLPP_Block& b)
     {
-        for (uint8_t index : b.myLocals)
+        for (uint16_t index : b.myLocals)
         {
             blocks.back().assembly.MOVRImm(0, index);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::UnallocateLocal);
