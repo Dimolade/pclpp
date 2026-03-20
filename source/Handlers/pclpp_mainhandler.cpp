@@ -3,6 +3,7 @@
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
+    puts(token.c_str());
     if (token != "main") return;
     PCLPP->assembly.PUSH_LR();
     PCLPP->assembly.MOVRImm(0, 71);

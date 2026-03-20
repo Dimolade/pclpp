@@ -131,13 +131,18 @@ public:
 
     void compile(std::string in)
     {
+        puts(in.c_str());
         tokenizer.tokenize(in);
+        for (const std::string& token : tokenizer.tokens.data)
+        {
+            puts(token.c_str());
+        }
         handlers.RegisterAll();
-        /*while (tokenizer.tokens.iteration < tokenizer.tokens.data.size())
+        while (tokenizer.tokens.iteration < tokenizer.tokens.data.size())
         {
             std::string t = tokenizer.tokens.Advance();
-            //if (!t.empty()) handlers.Call(this, t);
-        }*/
+            if (!t.empty()) handlers.Call(this, t);
+        }
     }
 
     void LoadString(std::string string) // loads string into r0
