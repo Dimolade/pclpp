@@ -6,7 +6,7 @@ void PCLPP_ReturnHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     if (token == "returnset")
     {
         std::string other = PCLPP->tokenizer.tokens.Advance();
-        PCLPP->MOVRImm(0, stoi(other));
+        PCLPP->.assembly.MOVRImm(0, stoi(other));
         std::string final = PCLPP->tokenizer.tokens.Advance();
     }
 }
