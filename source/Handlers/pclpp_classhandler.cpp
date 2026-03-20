@@ -95,6 +95,10 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
     InitClassRecursive(c, parent, b.assembly, PCLPP);
     b.assembly.POP(1 << 10);
     b.assembly.MOVRR(0,10);
+    b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+    parent.index = PCLPP->localVarCount;
+    b.myLocals.push_back(PCLPP->localVarCount);
+    PCLPP->localVarCount++;
 }
 
 void PCLPP_ClassHandler::OnToken(PCLPP* PCLPP, const std::string& token)

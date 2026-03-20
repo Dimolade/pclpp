@@ -56,7 +56,7 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
     else
     {
         PCLPP_MemoryReference& mr = GetReference(pclpp, other);
-        pclpp->blocks.back().assembly.MOVRImm(0, mr.address);
+        pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal(mr.index));
         std::string next = pclpp->tokenizer.tokens.Advance(); // either ; or *
         if (next == ";")
             switch (mr.size)
@@ -87,6 +87,7 @@ void PCLPP_ReturnHandler::OnToken(PCLPP* pclpp, const std::string& token)
     else if (token == "return")
     {
         InputPointerClass(pclpp, token);
+        pclpp->UnallocateBlock(pclpp->blocks.back());
         pclpp->blocks.back().assembly.POP_LR();
         pclpp->blocks.back().assembly.BXLR();
     }

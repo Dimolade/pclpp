@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdint>
+#include <vector>
 
 class pclpp_std
 {
@@ -13,6 +14,26 @@ public:
     static uint32_t Calloc(uint16_t elements, uint16_t size)
     {
         return (uint32_t)calloc(elements, size);
+    }
+
+    static inline std::vector<uint32_t> localvariablemanager;
+
+    static uint8_t AllocateLocal(uint32_t value)
+    {
+        uint32_t& var = localvariablemanager.emplace_back();
+        uint8_t pos = localvariablemanager.size()-1;
+        var = value;
+        return pos;
+    }
+
+    static uint32_t GetLocal(uint8_t index)
+    {
+        return localvariablemanager[index];
+    }
+
+    static void UnallocateLocal(uint8_t index)
+    {
+        localvariablemanager.erase(localvariablemanager.begin()+index);
     }
 
     static void Free(uint32_t address)

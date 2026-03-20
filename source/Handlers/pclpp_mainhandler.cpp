@@ -5,6 +5,7 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
     {
+        pclpp->UnallocateBlock(pclpp->blocks.back());
         PCLPP->blocks.back().assembly.POP_LR();
         PCLPP->blocks.back().assembly.BXLR();
         return;
