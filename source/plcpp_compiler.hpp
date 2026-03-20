@@ -153,7 +153,6 @@ public:
 class PCLPP_Variable
 {
 public:
-    uint8_t size = 4;
     uint32_t defaultValue = 0;
     std::string type = "int4";
     std::string name = "__error";
@@ -165,7 +164,23 @@ class PCLPP_Class
 public:
     std::vector<PCLPP_Variable> variables;
     std::vector<PCLPP_Block> blocks;
+    bool isByteClass = false;
+    uint8_t byteSize = 0;
     std::string name;
+
+    uint32_t GetSize()
+    {
+        if (isByteClass)
+        {
+            return byteSize;
+        }
+        uint32_t ts = 0;
+        for (PCLPP_Variable& v : variables)
+        {
+            ts += v.size;
+        }
+        return ts;
+    }
 };
 
 class PCLPP
@@ -174,7 +189,20 @@ public:
     PCLPP_Tokenizer tokenizer;
     PCLPP_TokenHandlers handlers;
     std::vector<PCLPP_Block> blocks;
+    std::vector<PCLPP_Class> classes;
     bool inBlock = false;
+
+    uint32_t GetTypeSize(std::string type)
+    {
+        for (PCLPP_Class& c : classes)
+        {
+            if (c.name == type)
+            {
+                return c.GetSize();
+            }
+        }
+        return 0;
+    }
 
     Assembly& GetMainAssembly()
     {
@@ -233,13 +261,23 @@ public:
         assembly.MOVRR(0,10);
     }
 
+    PCLPP_Class& GetClass(const std::string& name)
+    {
+        for (PCLPP_Class& c : classes)
+        {
+            if (c.name == name) return c;
+        }
+        return;
+    }
+
     void LoadClass(PCLPP_Class& c, Assembly& assembly)
     {
-        uint32_t totalSize = 0;
-        for (PCLPP_Variable& v : c.variables)
+        if (c.isByteClass)
         {
-            totalSize += v.size;
+            assembly.MOVRImm(0, c.byteSize);
+            assembly.CallFunction((uint32_t)pclpp_std::Malloc);
         }
+        uint32_t totalSize = c.GetSize();
         assembly.MOVRImm(0,totalSize);
         assembly.CallFunction((uint32_t)pclpp_std::Malloc);
         assembly.MOVRR(0,10);
