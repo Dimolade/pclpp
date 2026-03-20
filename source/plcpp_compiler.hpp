@@ -167,20 +167,6 @@ public:
     bool isByteClass = false;
     uint8_t byteSize = 0;
     std::string name;
-
-    uint32_t GetSize()
-    {
-        if (isByteClass)
-        {
-            return byteSize;
-        }
-        uint32_t ts = 0;
-        for (PCLPP_Variable& v : variables)
-        {
-            ts += v.size;
-        }
-        return ts;
-    }
 };
 
 class PCLPP
@@ -198,7 +184,19 @@ public:
         {
             if (c.name == type)
             {
-                return c.GetSize();
+                uint32_t totalSize = 0;
+                if (c.isByteClass)
+                {
+                    return c.byteSize;
+                }
+                else
+                {
+                    for (PCLPP_Variable& v : c.variables)
+                    {
+                        totalSize += GetTypeSize(v.type);
+                    }
+                }
+                return totalSize;
             }
         }
         return 0;
@@ -277,7 +275,18 @@ public:
             assembly.MOVRImm(0, c.byteSize);
             assembly.CallFunction((uint32_t)pclpp_std::Malloc);
         }
-        uint32_t totalSize = c.GetSize();
+        uint32_t totalSize = 0;
+        if (c.isByteClass)
+        {
+            totalSize = c.byteSize;
+        }
+        else
+        {
+            for (PCLPP_Variable& v : c.variables)
+            {
+                totalSize += GetTypeSize(v.type);
+            }
+        }
         assembly.MOVRImm(0,totalSize);
         assembly.CallFunction((uint32_t)pclpp_std::Malloc);
         assembly.MOVRR(0,10);
@@ -285,7 +294,8 @@ public:
         for (PCLPP_Variable& v : c.variables)
         {
             assembly.MOVRImm(1,v.defaultValue);
-            switch (v.size)
+            uint8_t size = GetTypeSize(v.type);
+            switch (size)
             {
                 case 1:
                 assembly.CallFunction((uint32_t)pclpp_std::Write8);
@@ -297,7 +307,7 @@ public:
                 assembly.CallFunction((uint32_t)pclpp_std::Write32);
                 break;
             }
-            assembly.ADDRImm(0,v.size);
+            assembly.ADDRImm(0,size);
         }
         assembly.POP(1 << 10);
         assembly.MOVRR(0,10);
