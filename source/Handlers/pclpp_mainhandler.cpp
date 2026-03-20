@@ -3,10 +3,12 @@
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
-    puts(token.c_str());
+    if (token == "end")
+    {
+        PCLPP->assembly.POP_LR();
+        PCLPP->assembly.BXLR();
+    }
     if (token != "main") return;
     PCLPP->assembly.PUSH_LR();
     PCLPP->assembly.MOVRImm(0, 71);
-    PCLPP->assembly.POP_LR();
-    PCLPP->assembly.BXLR();
 }

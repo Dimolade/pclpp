@@ -119,6 +119,11 @@ public:
             }
             buffer += in[i];
         }
+        if (buffer != "")
+        {
+            tokens.push_back(buffer);
+            buffer = "";
+        }
     }
 };
 
@@ -131,12 +136,7 @@ public:
 
     void compile(std::string in)
     {
-        puts(in.c_str());
         tokenizer.tokenize(in);
-        for (const std::string& token : tokenizer.tokens.data)
-        {
-            puts(token.c_str());
-        }
         handlers.RegisterAll();
         while (tokenizer.tokens.iteration < tokenizer.tokens.data.size())
         {
