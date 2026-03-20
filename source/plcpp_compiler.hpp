@@ -127,12 +127,78 @@ public:
     }
 };
 
+enum PCLPP_Block_Type
+{
+    Function,
+    Main
+};
+
+class PCLPP_MemoryReference
+{
+public:
+    uint32_t address;
+    uint8_t size;
+    std::string name;
+    std::vector<PCLPP_MemoryReference> children;
+};
+
+class PCLPP_Block
+{
+public:
+    PCLPP_Block_Type type = PCLPP_Block_Type::Function;
+    std::vector<PCLPP_MemoryReference> memoryReferences;
+    Assembly assembly;
+};
+
+class PCLPP_Variable
+{
+public:
+    uint8_t size = 4;
+    uint32_t defaultValue = 0;
+    std::string type = "int4";
+    std::string name = "__error";
+    uint32_t offset = 0;
+};
+
+class PCLPP_Class
+{
+public:
+    std::vector<PCLPP_Variable> variables;
+    std::vector<PCLPP_Block> blocks;
+    std::string name;
+};
+
 class PCLPP
 {
 public:
-    Assembly assembly;
     PCLPP_Tokenizer tokenizer;
     PCLPP_TokenHandlers handlers;
+    std::vector<PCLPP_Block> blocks;
+    bool inBlock = false;
+
+    Assembly& GetMainAssembly()
+    {
+        for (PCLPP_Block& b : blocks)
+        {
+            if (b.type == PCLPP_Block_Type::Main)
+            {
+                return b.assembly;
+            }
+        }
+        return;
+    }
+
+    PCLPP_Block& GetMain()
+    {
+        for (PCLPP_Block& b : blocks)
+        {
+            if (b.type == PCLPP_Block_Type::Main)
+            {
+                return b;
+            }
+        }
+        return;
+    }
 
     void compile(std::string in)
     {
@@ -145,7 +211,7 @@ public:
         }
     }
 
-    void LoadString(std::string string) // loads string into r0
+    void LoadString(std::string string, Assembly& assembly) // loads string into r0
     {
         assembly.MOVRImm(0, string.length());
         assembly.MOVRImm(1, 1);
@@ -162,6 +228,38 @@ public:
             assembly.MOVRImm(1, string[i]);
             assembly.ADDRImm(0, 1);
             assembly.CallFunction((uint32_t)pclpp_std::Write8);
+        }
+        assembly.POP(1 << 10);
+        assembly.MOVRR(0,10);
+    }
+
+    void LoadClass(PCLPP_Class& c, Assembly& assembly)
+    {
+        uint32_t totalSize = 0;
+        for (PCLPP_Variable& v : c.variables)
+        {
+            totalSize += v.size;
+        }
+        assembly.MOVRImm(0,totalSize);
+        assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+        assembly.MOVRR(0,10);
+        assembly.PUSH(1 << 10);
+        for (PCLPP_Variable& v : c.variables)
+        {
+            assembly.MOVRImm(1,v.defaultValue);
+            switch (v.size)
+            {
+                case 1:
+                assembly.CallFunction((uint32_t)pclpp_std::Write8);
+                break;
+                case 2:
+                assembly.CallFunction((uint32_t)pclpp_std::Write16);
+                break;
+                case 4:
+                assembly.CallFunction((uint32_t)pclpp_std::Write32);
+                break;
+            }
+            assembly.ADDRImm(0,v.size);
         }
         assembly.POP(1 << 10);
         assembly.MOVRR(0,10);

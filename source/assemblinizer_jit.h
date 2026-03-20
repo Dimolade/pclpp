@@ -20,4 +20,10 @@ struct Assemblinizer
         int out = t(input);
         return out;
     }
+
+    inline static void Unallocate(Assembly ASM)
+    {
+        if (ASM.startAddress == 0) return;
+        ASM.unalloc();
+    }
 };

@@ -57,6 +57,11 @@ public:
             memcpy(codeBlockData, code.data(), instructs*4);
         }
     }
+
+    inline void unalloc()
+    {
+        ctrlDestroyCodeRegion(&codeRegion);
+    }
 #else
     inline void allocStartAddress()
     {

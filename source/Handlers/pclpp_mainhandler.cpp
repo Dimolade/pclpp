@@ -3,12 +3,18 @@
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
-    if (token == "end")
+    if (token == "}" && PCLPP->inBlock)
     {
-        PCLPP->assembly.POP_LR();
-        PCLPP->assembly.BXLR();
+        PCLPP->blocks.back().assembly.POP_LR();
+        PCLPP->blocks.back().assembly.BXLR();
+        return;
     }
     if (token != "main") return;
-    PCLPP->assembly.PUSH_LR();
-    PCLPP->assembly.MOVRImm(0, 71);
+    std::string next = PCLPP->tokenizer.tokens.Advance();
+    if (next != "{") return;
+    PCLPP->inBlock = true;
+    PCLPP_Block& b = PCLPP->blocks.emplace_back();
+    b.type = PCLPP_Block_Type::Main;
+    b.assembly.PUSH_LR();
+    b.assembly.MOVRImm(0, -1);
 }
