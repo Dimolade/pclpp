@@ -19,7 +19,7 @@ public:
     uint16_t allocate(uint32_t value)
     {
         if (freeList.empty())
-            throw std::runtime_error("Out of memory");
+            return 0;
 
         uint16_t index = freeList.top();
         freeList.pop();
@@ -33,7 +33,7 @@ public:
     void free(uint16_t index)
     {
         if (!used[index])
-            throw std::runtime_error("Double free");
+            return;
 
         used[index] = false;
         freeList.push(index);
@@ -42,7 +42,7 @@ public:
     uint32_t& operator[](uint16_t index)
     {
         if (!used[index])
-            throw std::runtime_error("Accessing freed slot");
+            return;
 
         return data[index];
     }
@@ -66,7 +66,7 @@ public:
         return (uint32_t)calloc(elements, size);
     }
 
-    static inline pclpp_varpool localvariablemanager(65535);
+    static inline pclpp_varpool localvariablemanager{65535};
 
     static uint16_t AllocateLocal(uint32_t value)
     {
