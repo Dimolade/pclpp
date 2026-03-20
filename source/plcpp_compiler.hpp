@@ -133,10 +133,11 @@ public:
     {
         tokenizer.tokenize(in);
         handlers.RegisterAll();
-        for (tokenizer.tokens.iteration = 0; tokenizer.tokens.iteration < tokenizer.tokens.data.size();)
+        /*while (tokenizer.tokens.iteration < tokenizer.tokens.data.size())
         {
-            handlers.Call(this, tokenizer.tokens.Advance());
-        }
+            std::string t = tokenizer.tokens.Advance();
+            //if (!t.empty()) handlers.Call(this, t);
+        }*/
     }
 
     void LoadString(std::string string) // loads string into r0
@@ -146,8 +147,11 @@ public:
         assembly.CallFunction((uint32_t)pclpp_std::Calloc);
         assembly.MOVRR(10,0);
         assembly.PUSH(1 << 10);
-        assembly.MOVRImm(1, string[0]);
-        assembly.CallFunction((uint32_t)pclpp_std::Write8);
+        if (string.length() >= 1)
+        {
+            assembly.MOVRImm(1, string[0]);
+            assembly.CallFunction((uint32_t)pclpp_std::Write8);
+        }
         for (int i = 1; i < string.length(); i++)
         {
             assembly.MOVRImm(1, string[i]);
