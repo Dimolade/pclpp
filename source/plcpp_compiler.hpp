@@ -178,7 +178,7 @@ public:
     std::vector<PCLPP_Block> blocks;
     std::vector<PCLPP_Class> classes;
     bool inBlock = false;
-    uint16_t localVarCount = 1;
+    uint16_t localVarCount = 0;
 
     uint32_t GetTypeSize(std::string type)
     {

@@ -149,6 +149,28 @@ public:
         return false;
     }
 
+    inline void MOVW(uint8_t reg, uint16_t imm)
+    {
+        uint32_t imm4  = (imm >> 12) & 0xF;
+        uint32_t imm12 = imm & 0xFFF;
+
+        emit32(0xE3000000 |
+            (imm4 << 16) |
+            ((reg & 0xF) << 12) |
+            imm12);
+    }
+
+    inline void MOVT(uint8_t reg, uint16_t imm)
+    {
+        uint32_t imm4  = (imm >> 12) & 0xF;
+        uint32_t imm12 = imm & 0xFFF;
+
+        emit32(0xE3400000 |
+            (imm4 << 16) |
+            ((reg & 0xF) << 12) |
+            imm12);
+    }
+
     inline void MOVRImm(uint8_t reg, uint32_t val)
     {
         if (EncodeImm(val, reg, 0xE3A00000))
@@ -157,12 +179,8 @@ public:
         if (EncodeImm(~val, reg, 0xE3E00000))
             return;
 
-        uint16_t low  = val & 0xFFFF;
-        uint16_t high = (val >> 16) & 0xFFFF;
-
-        emit32(0xE3000000 | ((reg & 0xF) << 12) | low);
-
-        emit32(0xE3400000 | ((reg & 0xF) << 12) | high);
+        MOVW(reg, val & 0xFFFF);
+        MOVT(reg, (val >> 16) & 0xFFFF);
     }
 
     inline void MOVRR(uint8_t target, uint8_t reg)
