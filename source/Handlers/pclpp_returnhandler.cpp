@@ -60,6 +60,16 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
         pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
         std::string next = pclpp->tokenizer.tokens.Advance(); // either ; or *
         if (next == ";")
+        {
+            printf("Reading size: ");
+            printf(std::to_string(mr.size).c_str());
+            printf("\n");
+            printf("Name: ");
+            printf(mr.name.c_str());
+            printf("\n");
+            printf("Index: ");
+            printf(std::to_string(mr.index).c_str());
+            printf("\n");
             switch (mr.size)
             {
                 case 1:
@@ -72,6 +82,7 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
                 pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read32);
                 break;
             }
+        }
         else if (next == "*")
         {
             pclpp->tokenizer.tokens.Advance(); // go to ;

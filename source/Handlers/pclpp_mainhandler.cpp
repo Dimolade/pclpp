@@ -5,10 +5,11 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
     {
-        PCLPP->blocks.back().assembly.PUSH(1 << 0);
+        PCLPP->blocks.back().assembly.MOVRR(12, 0);
+        PCLPP->blocks.back().assembly.PUSH(1 << 12);
         PCLPP->UnallocateBlock(PCLPP->blocks.back());
-        PCLPP->blocks.back().assembly.MOVRImm(0,0);
-        PCLPP->blocks.back().assembly.POP(1 << 0);
+        PCLPP->blocks.back().assembly.POP(1 << 12);
+        PCLPP->blocks.back().assembly.MOVRR(0, 12);
         PCLPP->blocks.back().assembly.POP(1 << 11);
         PCLPP->blocks.back().assembly.MOVRR(14, 11);
         PCLPP->blocks.back().assembly.BXLR();

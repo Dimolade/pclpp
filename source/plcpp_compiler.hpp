@@ -309,9 +309,7 @@ public:
         }
         assembly.POP(1 << 10);
         assembly.MOVRR(0,10);
-        assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
-        b.myLocals.push_back(localVarCount);
-        localVarCount++;
+        NewLocal(b);
     }
 
     void LoadClassAsAddress(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b)
@@ -325,8 +323,6 @@ public:
         assembly.CallFunction((uint32_t)pclpp_std::Write32);
         assembly.POP(1 << 10);
         assembly.MOVRR(0, 10);
-        assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
-        b.myLocals.push_back(localVarCount);
-        localVarCount++;
+        NewLocal(b);
     }
 };
