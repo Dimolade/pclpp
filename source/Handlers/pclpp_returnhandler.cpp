@@ -61,15 +61,6 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
         std::string next = pclpp->tokenizer.tokens.Advance(); // either ; or *
         if (next == ";")
         {
-            printf("Reading size: ");
-            printf(std::to_string(mr.size).c_str());
-            printf("\n");
-            printf("Name: ");
-            printf(mr.name.c_str());
-            printf("\n");
-            printf("Index: ");
-            printf(std::to_string(mr.index).c_str());
-            printf("\n");
             switch (mr.size)
             {
                 case 1:

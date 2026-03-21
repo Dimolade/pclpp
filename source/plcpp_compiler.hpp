@@ -270,8 +270,20 @@ public:
         return;
     }
 
+    void UnallocateMR(PCLPP_Block& b, std::vector<PCLPP_MemoryReference>& mr)
+    {
+        for (PCLPP_MemoryReference& mrr : mr)
+        {
+            blocks.back().assembly.MOVRImm(0, mrr.index);
+            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
+            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
+            UnallocateMR(b, mrr.children);
+        }
+    }
+
     void UnallocateBlock(PCLPP_Block& b)
     {
+        UnallocateMR(b, b.memoryReferences);
         for (uint16_t index : b.myLocals)
         {
             blocks.back().assembly.MOVRImm(0, index);
@@ -293,6 +305,10 @@ public:
         assembly.CallFunction((uint32_t)pclpp_std::Malloc);
         assembly.MOVRR(10, 0);
         assembly.PUSH(1 << 10);
+        NewLocal(b);
+        assembly.POP(1 << 10);
+        assembly.MOVRR(0,10);
+        assembly.PUSH(1 << 10);
         assembly.MOVRImm(1, value);
         uint8_t size = c.byteSize;
         switch (size)
@@ -309,7 +325,6 @@ public:
         }
         assembly.POP(1 << 10);
         assembly.MOVRR(0,10);
-        NewLocal(b);
     }
 
     void LoadClassAsAddress(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b)
@@ -317,12 +332,14 @@ public:
         if (c.isByteClass) return;
         assembly.MOVRImm(0, 4); // address size is 32 bits (4 bytes)
         assembly.CallFunction((uint32_t)pclpp_std::Malloc);
-        assembly.MOVRR(1,1);
+        assembly.PUSH(1 << 0);
+        NewLocal(b);
+        assembly.POP(1 << 0);
+        assembly.MOVRR(1,0);
         assembly.MOVRR(10,0);
         assembly.PUSH(1 << 10);
         assembly.CallFunction((uint32_t)pclpp_std::Write32);
         assembly.POP(1 << 10);
         assembly.MOVRR(0, 10);
-        NewLocal(b);
     }
 };

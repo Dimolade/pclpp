@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <vector>
 #include <stack>
+#include <iostream>
+
+//#define pclpp_std_debug
 
 class pclpp_varpool
 {
@@ -10,7 +13,7 @@ public:
     pclpp_varpool(uint16_t capacity)
         : data(capacity), used(capacity, false)
     {
-        for (uint16_t i = 0; i < capacity; i++)
+        for (int i = capacity - 1; i >= 0; i--)
         {
             freeList.push(i);
         }
@@ -19,7 +22,7 @@ public:
     uint16_t allocate(uint32_t value)
     {
         if (freeList.empty())
-            return 0;
+            return -1;
 
         uint16_t index = freeList.top();
         freeList.pop();
@@ -71,16 +74,27 @@ public:
     static uint16_t AllocateLocal(uint32_t value)
     {
         uint16_t index = localvariablemanager.allocate(value);
+        #ifdef pclpp_std_debug
+        std::cout << "Allocate Local: " << std::to_string(value) << std::endl;
+        std::cout << "Local Index: " << std::to_string(index) << std::endl;
+        #endif
         return index;
     }
 
     static uint32_t GetLocal(uint16_t index)
     {
+        #ifdef pclpp_std_debug
+        std::cout << "Getting Local: " << std::to_string(index) << std::endl;
+        std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
+        #endif
         return localvariablemanager[index];
     }
 
     static void UnallocateLocal(uint16_t index)
     {
+        #ifdef pclpp_std_debug
+        std::cout << "Unallocate Local: " << std::to_string(index) << std::endl;
+        #endif
         localvariablemanager.free(index);
     }
 
@@ -127,6 +141,10 @@ public:
     static uint32_t Read32(uint32_t address)
     {
         uint32_t* mem = (uint32_t*)address;
+        #ifdef pclpp_std_debug
+        std::cout << "Reading word: " << std::to_string(*mem) << std::endl;
+        std::cout << "Address: " << std::to_string((uint32_t)mem) << std::endl;
+        #endif
         return *mem;
     }
 };

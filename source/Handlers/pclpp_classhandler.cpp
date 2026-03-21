@@ -62,6 +62,7 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
             PCLPP_MemoryReference& child = parent.children.emplace_back();
             child.name = v.name;
             child.index = PCLPP->localVarCount;
+            child.size = 4;
             PCLPP->LoadClassAsAddress(newc, b.assembly, b);
             LoadClassRecursive(PCLPP,newc, b, child);
             continue;
