@@ -54,7 +54,7 @@ void HandleClass(PCLPP* PCLPP, const std::string& token)
 
 void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_MemoryReference& parent)
 {
-    for (PCLPP_Variable& v : c)
+    for (PCLPP_Variable& v : c.variables)
     {
         PCLPP_Class& newc = PCLPP->GetClass(v.type);
         if (!newc.isByteClass)
