@@ -279,48 +279,54 @@ public:
         }
     }
 
-    void LoadClass(PCLPP_Class& c, Assembly& assembly)
+    void NewLocal(PCLPP_Block& b)
     {
-        if (c.isByteClass)
-        {
-            assembly.MOVRImm(0, c.byteSize);
-            assembly.CallFunction((uint32_t)pclpp_std::Malloc);
-        }
-        uint32_t totalSize = 0;
-        if (c.isByteClass)
-        {
-            totalSize = c.byteSize;
-        }
-        else
-        {
-            for (PCLPP_Variable& v : c.variables)
-            {
-                totalSize += GetTypeSize(v.type);
-            }
-        }
-        assembly.MOVRImm(0,totalSize);
+        b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.myLocals.push_back(localVarCount);
+        localVarCount++;
+    }
+
+    void LoadByteClass(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
+    {
+        if (!c.isByteClass) return;
+        assembly.MOVRImm(0, c.byteSize);
         assembly.CallFunction((uint32_t)pclpp_std::Malloc);
-        assembly.MOVRR(0,10);
+        assembly.MOVRR(10, 0);
         assembly.PUSH(1 << 10);
-        for (PCLPP_Variable& v : c.variables)
+        assembly.MOVRImm(1, value);
+        uint8_t size = c.byteSize;
+        switch (size)
         {
-            assembly.MOVRImm(1,v.defaultValue);
-            uint8_t size = GetTypeSize(v.type);
-            switch (size)
-            {
-                case 1:
-                assembly.CallFunction((uint32_t)pclpp_std::Write8);
-                break;
-                case 2:
-                assembly.CallFunction((uint32_t)pclpp_std::Write16);
-                break;
-                case 4:
-                assembly.CallFunction((uint32_t)pclpp_std::Write32);
-                break;
-            }
-            assembly.ADDRImm(0,size);
+            case 1:
+            assembly.CallFunction((uint32_t)pclpp_std::Write8);
+            break;
+            case 2:
+            assembly.CallFunction((uint32_t)pclpp_std::Write16);
+            break;
+            case 4:
+            assembly.CallFunction((uint32_t)pclpp_std::Write32);
+            break;
         }
         assembly.POP(1 << 10);
         assembly.MOVRR(0,10);
+        assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.myLocals.push_back(localVarCount);
+        localVarCount++;
+    }
+
+    void LoadClassAsAddress(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b)
+    {
+        if (c.isByteClass) return;
+        assembly.MOVRImm(0, 4); // address size is 32 bits (4 bytes)
+        assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+        assembly.MOVRR(1,1);
+        assembly.MOVRR(10,0);
+        assembly.PUSH(1 << 10);
+        assembly.CallFunction((uint32_t)pclpp_std::Write32);
+        assembly.POP(1 << 10);
+        assembly.MOVRR(0, 10);
+        assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.myLocals.push_back(localVarCount);
+        localVarCount++;
     }
 };

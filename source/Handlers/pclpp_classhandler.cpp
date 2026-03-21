@@ -52,29 +52,26 @@ void HandleClass(PCLPP* PCLPP, const std::string& token)
     }
 }
 
-void InitClassRecursive(PCLPP_Class& cls, PCLPP_MemoryReference& parent, Assembly& assembly, PCLPP* PCLPP, PCLPP_Block& b)
+void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_MemoryReference& parent)
 {
-    for (PCLPP_Variable& var : cls.variables)
+    for (PCLPP_Variable& v : c)
     {
-        PCLPP_Class& childClass = PCLPP->GetClass(var.type);
-
-        PCLPP_MemoryReference& child = parent.children.emplace_back();
-
-        child.name = var.name;
-        child.size = PCLPP->GetTypeSize(var.type);
-        child.index = PCLPP->localVarCount;
-
-        if (childClass.isByteClass)
+        PCLPP_Class& newc = PCLPP->GetClass(v.type);
+        if (!newc.isByteClass)
         {
-            PCLPP->LoadClass(childClass, assembly);
-            b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
-            b.myLocals.push_back(PCLPP->localVarCount);
-            PCLPP->localVarCount++;
+            PCLPP_MemoryReference& child = parent.children.emplace_back();
+            child.name = v.name;
+            child.index = PCLPP->localVarCount;
+            PCLPP->LoadClassAsAddress(newc, b.assembly, b);
+            LoadClassRecursive(PCLPP,newc, b, child);
+            continue;
         }
         else
         {
-            PCLPP->localVarCount++;
-            InitClassRecursive(childClass, child, assembly, PCLPP, b);
+            PCLPP_MemoryReference& child = parent.children.emplace_back();
+            child.name = v.name;
+            child.index = PCLPP->localVarCount;
+            PCLPP->LoadByteClass(c, b.assembly, b, v.defaultValue);
         }
     }
 }
@@ -84,26 +81,23 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
     std::string Class = PCLPP->tokenizer.tokens.Advance();
     std::string name = PCLPP->tokenizer.tokens.Advance();
     PCLPP_Block& b = PCLPP->blocks.back();
+    PCLPP_Class& c = PCLPP->GetClass(Class);
     PCLPP_MemoryReference& parent = b.memoryReferences.emplace_back();
     parent.name = name;
-    parent.size = PCLPP->GetTypeSize(Class);
-    PCLPP->tokenizer.tokens.Advance(); // skip ';'
-    PCLPP_Class& c = PCLPP->GetClass(Class);
-    PCLPP->LoadClass(c,b.assembly);
-    b.assembly.MOVRR(10,0);
-    b.assembly.PUSH(1 << 10);
     if (c.isByteClass)
     {
-        b.assembly.POP(1 << 10);
+        parent.size = c.byteSize;
+        parent.index = PCLPP->localVarCount;
+        PCLPP->LoadByteClass(c, b.assembly, b, 0);
         return;
     }
-    InitClassRecursive(c, parent, b.assembly, PCLPP, b);
-    b.assembly.POP(1 << 10);
-    b.assembly.MOVRR(0,10);
-    b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
-    parent.index = PCLPP->localVarCount;
-    b.myLocals.push_back(PCLPP->localVarCount);
-    PCLPP->localVarCount++;
+    else
+    {
+        parent.size = 4;
+        parent.index = PCLPP->localVarCount;
+        PCLPP->LoadClassAsAddress(c, b.assembly, b);
+        LoadClassRecursive(PCLPP, c, b, parent);
+    }
 }
 
 void PCLPP_ClassHandler::OnToken(PCLPP* PCLPP, const std::string& token)
