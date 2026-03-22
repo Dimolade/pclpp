@@ -1,7 +1,7 @@
 #include "pclpp_callhandler.h"
 #include "../plcpp_compiler.hpp"
 
-void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
+void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token != "call" && PCLPP->inBlock == false) return;
 
