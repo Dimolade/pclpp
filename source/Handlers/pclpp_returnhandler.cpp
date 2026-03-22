@@ -1,51 +1,6 @@
 #include "pclpp_returnhandler.h"
 #include "../plcpp_compiler.hpp"
 
-PCLPP_MemoryReference& GetReferenceRecursive(PCLPP_MemoryReference& mrr, std::string token, PCLPP* pclpp)
-{
-    PCLPP_MemoryReference* cand = nullptr;
-
-    for (PCLPP_MemoryReference& mr : mrr.children)
-    {
-        if (mr.name == token)
-        {
-            cand = &mr;
-            break;
-        }
-    }
-
-    std::string next = pclpp->tokenizer.tokens.Advance();
-
-    if (next == ".")
-    {
-        return GetReferenceRecursive(*cand, pclpp->tokenizer.tokens.Advance(), pclpp);
-    }
-
-    pclpp->tokenizer.tokens.iteration--;
-    return *cand;
-}
-
-PCLPP_MemoryReference& GetReference(PCLPP* pclpp, std::string token)
-{
-    PCLPP_Block& thisBlock = pclpp->blocks.back();
-    PCLPP_MemoryReference* cand;
-    for (PCLPP_MemoryReference& mr : thisBlock.memoryReferences)
-    {
-        if (mr.name == token)
-        {
-            cand = &mr;
-            break;
-        }
-    }
-    std::string next = pclpp->tokenizer.tokens.Advance();
-    if (next == ".")
-    {
-        return GetReferenceRecursive(*cand, pclpp->tokenizer.tokens.Advance(), pclpp);
-    }
-    pclpp->tokenizer.tokens.iteration--;
-    return *cand;
-}
-
 void InputPointerClass(PCLPP* pclpp, const std::string& token)
 {
     std::string other = pclpp->tokenizer.tokens.Advance();
@@ -55,7 +10,7 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
     }
     else
     {
-        PCLPP_MemoryReference& mr = GetReference(pclpp, other);
+        PCLPP_MemoryReference& mr = PCLPP->GetReference(other);
         pclpp->blocks.back().assembly.MOVRImm(0, mr.index);
         pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
         std::string next = pclpp->tokenizer.tokens.Advance(); // either ; or *

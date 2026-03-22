@@ -170,6 +170,33 @@ public:
     std::string name;
 };
 
+class PCLPP_Library_Link
+{
+public:
+    std::string name;
+    std::string name_space;
+    uint32_t address;
+    int size;
+};
+
+class PCLPP_Library
+{
+public:
+    std::vector<PCLPP_Library_Link> links;
+    void Link(std::string name, uint32_t address, uint8_t size = 4)
+    {
+        Link(name, "", address, size);
+    }
+    void Link(std::string name, std::string namespace, uint32_t address, uint8_t size = 4)
+    {
+        PCLPP_Library_Link& l = links.emplace_back();
+        l.name = name;
+        l.name_space = namespace;
+        l.address = address;
+        l.size = size;
+    }
+};
+
 class PCLPP
 {
 public:
@@ -177,8 +204,14 @@ public:
     PCLPP_TokenHandlers handlers;
     std::vector<PCLPP_Block> blocks;
     std::vector<PCLPP_Class> classes;
+    std::vector<PCLPP_Library&> libraries;
     bool inBlock = false;
     uint16_t localVarCount = 0;
+
+    void AddLibrary(PCLPP_Library& l)
+    {
+        libraries.push_back(l);
+    }
 
     uint32_t GetTypeSize(std::string type)
     {
@@ -239,6 +272,66 @@ public:
         }
     }
 
+    PCLPP_Library_Link& GetAddress(std::string name, std::string name_space = "")
+    {
+        for (PCLPP_Library& l : libraries)
+        {
+            for (PCLPP_Library_Link& ll : l.links)
+            {
+                if (ll.name_space == name_space && ll.name == name)
+                {
+                    return ll;
+                }
+            }
+        }
+        return;
+    }
+
+    PCLPP_MemoryReference& GetReferenceRecursive(PCLPP_MemoryReference& mrr, std::string token)
+    {
+        PCLPP_MemoryReference* cand = nullptr;
+
+        for (PCLPP_MemoryReference& mr : mrr.children)
+        {
+            if (mr.name == token)
+            {
+                cand = &mr;
+                break;
+            }
+        }
+
+        std::string next = tokenizer.tokens.Advance();
+
+        if (next == ".")
+        {
+            return GetReferenceRecursive(*cand, tokenizer.tokens.Advance(), pclpp);
+        }
+
+        tokenizer.tokens.iteration--;
+        return *cand;
+    }
+
+    PCLPP_MemoryReference& GetReference(std::string token)
+    {
+        PCLPP_Block& thisBlock = blocks.back();
+        PCLPP_MemoryReference* cand;
+        for (PCLPP_MemoryReference& mr : thisBlock.memoryReferences)
+        {
+            if (mr.name == token)
+            {
+                cand = &mr;
+                break;
+            }
+        }
+        std::string next = tokenizer.tokens.Advance();
+        if (next == ".")
+        {
+            return GetReferenceRecursive(*cand, tokenizer.tokens.Advance());
+        }
+        tokenizer.tokens.iteration--;
+        return *cand;
+    }
+
     void LoadString(std::string string, Assembly& assembly) // loads string into r0
     {
         assembly.MOVRImm(0, string.length());
@@ -293,9 +386,36 @@ public:
 
     void NewLocal(PCLPP_Block& b)
     {
+        b.assembly.PUSH(1 << 0);
         b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.assembly.POP(1 << 0);
         b.myLocals.push_back(localVarCount);
         localVarCount++;
+    }
+
+    void NewLocalWithValue(PCLPP_Block& b, uint8_t size)
+    {
+        b.assembly.PUSH(1 << 1);
+        b.assembly.PUSH(1 << 0);
+        b.assembly.MOVRR(1, 0);
+        b.assembly.MOVRImm(0, size);
+        b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+        // r0: address, r1: value
+        switch (size)
+        {
+            case 1:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
+            break;
+            case 2:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write16);
+            break;
+            case 4:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write32);
+            break;
+        }
+        b.assembly.POP(1 << 0);
+        b.assembly.POP(1 << 1);
+        // original values restored
     }
 
     void LoadByteClass(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
