@@ -57,12 +57,12 @@ int MyCPPFunction()
 }
 PCLPP pclpp;
 PCLPP_Library& pclpplib;
-pclpp.Link("MyCPPFunction", (uint32_t)MyCPPFunction);
+pclpp.Link("MyCPPFunction", "MyNamespace", (uint32_t)MyCPPFunction);
 pclpp.AddLink(pclpplib);
 ```
 ```cpp
 main {
-  call returnedVal MyCPPFunction();
+  call returnedVal MyNamespace.MyCPPFunction();
   returnset returnedVal;
 }
 ```
