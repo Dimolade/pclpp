@@ -3,7 +3,8 @@
 
 void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
-    if (token != "call" && PCLPP->inBlock == false) return;
+    if (token != "call") return;
+    if (PCLPP->inBlock == false) return;
 
     uint32_t addressToCall = 0;
     std::string namespaceName = "";
