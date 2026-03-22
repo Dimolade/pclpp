@@ -37,19 +37,9 @@ main {
 To return the address of a variable instead, put an Asterix (*) after the full usage.<br>
 `returnset pbc.test*;` <br>
 > Sets r0 to the address of pbc.test
-
-# How the Language works
 ---
-Basically, everything in this Language is a pointer. Its specifically designed for ARM32 processors.
-A Script has a limit of 65536 local variables. Once a block finishes, it frees all the slots the block used on the local variables, and the actual memory at that address.
-A local variable ALWAYS stores an Address to memory. All this wouldnt be possible without the standard library it uses. It uses the standard library to:
-- Read Memory
-- Change Memory
-- Manage Local Variables
-- Allocate
-- Free
+### Calling C++ Function using Libraries
 
-Im still working on adding custom functions, which will work like this:
 ```cpp
 int MyCPPFunction()
 {
@@ -66,5 +56,15 @@ main {
   returnset returnedVal;
 }
 ```
-> The above code will return 45 (once its actually implemented)
-Class functions also are a big goal, but will be very difficult.
+> The above code returns 45.
+
+# How the Language works
+---
+Basically, everything in this Language is a pointer. Its specifically designed for ARM32 processors.
+A Script has a limit of 65536 local variables. Once a block finishes, it frees all the slots the block used on the local variables, and the actual memory at that address.
+A local variable ALWAYS stores an Address to memory. All this wouldnt be possible without the standard library it uses. It uses the standard library to:
+- Read Memory
+- Change Memory
+- Manage Local Variables
+- Allocate
+- Free
