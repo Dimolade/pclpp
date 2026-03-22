@@ -51,11 +51,20 @@ A local variable ALWAYS stores an Address to memory. All this wouldnt be possibl
 
 Im still working on adding custom functions, which will work like this:
 ```cpp
-#define MyCPPFunction (address)
-
+int MyCPPFunction()
+{
+  return 45;
+}
+PCLPP pclpp;
+PCLPP_Library& pclpplib;
+pclpp.Link("MyCPPFunction", (uint32_t)MyCPPFunction);
+pclpp.AddLink(pclpplib);
+```
+```cpp
 main {
   call returnedVal MyCPPFunction();
   returnset returnedVal;
 }
 ```
+> The above code will return 45 (once its actually implemented)
 Class functions also are a big goal, but will be very difficult.
