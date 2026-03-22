@@ -3,6 +3,7 @@
 #include "pclpp_mainhandler.h"
 #include "pclpp_returnhandler.h"
 #include "pclpp_classhandler.h"
+#include "pclpp_callhandler.h"
 #include <memory>
 
 class PCLPP_TokenHandlers
@@ -15,6 +16,7 @@ public:
         handlers.push_back(std::make_unique<PCLPP_MainHandler>());
         handlers.push_back(std::make_unique<PCLPP_ReturnHandler>());
         handlers.push_back(std::make_unique<PCLPP_ClassHandler>());
+        handlers.push_back(std::make_unique<PCLPP_CallHandler>());
     }
 
     void Call(PCLPP* PCLPP, std::string token)
