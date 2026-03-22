@@ -58,7 +58,7 @@ int MyCPPFunction()
 PCLPP pclpp;
 PCLPP_Library& pclpplib;
 pclpp.Link("MyCPPFunction", "MyNamespace", (uint32_t)MyCPPFunction);
-pclpp.AddLink(pclpplib);
+pclpp.AddLibrary(pclpplib);
 ```
 ```cpp
 main {
