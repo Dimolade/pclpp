@@ -399,7 +399,12 @@ public:
         b.assembly.PUSH(1 << 0);
         b.assembly.MOVRR(1, 0);
         b.assembly.MOVRImm(0, size);
+        b.assembly.PUSH(1 << 1);
         b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+        b.assembly.POP(1 << 1);
+        b.assembly.PUSH(1 << 1);
+        NewLocal(b);
+        b.assembly.POP(1 << 1);
         // r0: address, r1: value
         switch (size)
         {
