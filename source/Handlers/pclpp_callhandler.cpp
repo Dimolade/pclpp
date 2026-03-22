@@ -52,16 +52,16 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         if (isdigit(now[0]))
         {
-            pclpp->blocks.back().assembly.MOVRImm(argIndex, stoi(now));
+            PCLPP->blocks.back().assembly.MOVRImm(argIndex, stoi(now));
             now = PCLPP->tokenizer.tokens.Advance();
             continue;
         }
         else
         {
-            PCLPP_MemoryReference& mr = PCLPP->GetReference(other);
-            pclpp->blocks.back().assembly.PUSH(1 << 0);
-            pclpp->blocks.back().assembly.MOVRImm(0, mr.index);
-            pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
+            PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
+            PCLPP->blocks.back().assembly.PUSH(1 << 0);
+            PCLPP->blocks.back().assembly.MOVRImm(0, mr.index);
+            PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
             std::string next = PCLPP->tokenizer.tokens.Advance(); // either ; or *
             if (next == ",")
             {
@@ -79,8 +79,8 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
                 }
                 PCLPP->tokenizer.tokens.iteration--;
             }
-            pclpp->blocks.back().assembly.MOVRR(argIndex, 0);
-            pclpp->blocks.back().assembly.POP(1 << 0);
+            PCLPP->blocks.back().assembly.MOVRR(argIndex, 0);
+            PCLPP->blocks.back().assembly.POP(1 << 0);
             now = PCLPP->tokenizer.tokens.Advance();
             continue;
         }

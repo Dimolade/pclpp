@@ -10,7 +10,7 @@ void InputPointerClass(PCLPP* pclpp, const std::string& token)
     }
     else
     {
-        PCLPP_MemoryReference& mr = PCLPP->GetReference(other);
+        PCLPP_MemoryReference& mr = pclpp->GetReference(other);
         pclpp->blocks.back().assembly.MOVRImm(0, mr.index);
         pclpp->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
         std::string next = pclpp->tokenizer.tokens.Advance(); // either ; or *

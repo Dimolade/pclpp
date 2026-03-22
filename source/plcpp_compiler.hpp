@@ -187,11 +187,11 @@ public:
     {
         Link(name, "", address, size);
     }
-    void Link(std::string name, std::string namespace, uint32_t address, uint8_t size = 4)
+    void Link(std::string name, std::string name_space, uint32_t address, uint8_t size = 4)
     {
         PCLPP_Library_Link& l = links.emplace_back();
         l.name = name;
-        l.name_space = namespace;
+        l.name_space = name_space;
         l.address = address;
         l.size = size;
     }
@@ -204,7 +204,7 @@ public:
     PCLPP_TokenHandlers handlers;
     std::vector<PCLPP_Block> blocks;
     std::vector<PCLPP_Class> classes;
-    std::vector<PCLPP_Library&> libraries;
+    std::vector<PCLPP_Library> libraries;
     bool inBlock = false;
     uint16_t localVarCount = 0;
 
@@ -304,7 +304,7 @@ public:
 
         if (next == ".")
         {
-            return GetReferenceRecursive(*cand, tokenizer.tokens.Advance(), pclpp);
+            return GetReferenceRecursive(*cand, tokenizer.tokens.Advance());
         }
 
         tokenizer.tokens.iteration--;
