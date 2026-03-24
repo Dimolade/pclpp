@@ -14,8 +14,8 @@ void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, 
     b.assembly.PUSH(1 << 1);
     b.assembly.MOVRImm(0, mr.index);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-    b.assembly.MOVRR(targetRegister, 0);
     pclpp->ReadASM(mr.size, b);
+    b.assembly.MOVRR(targetRegister, 0);
     if (targetRegister == 0)
     {
         b.assembly.MOVRR(1,0);
@@ -88,7 +88,8 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
         IndexHolder& ih = Get(mr.index, holders);
         now = PCLPP->tokenizer.tokens.Advance();
-        if (now == "=")
+        if (now == "}") break;
+        else if (now == "=")
         {
             now = PCLPP->tokenizer.tokens.Advance();
             if (isdigit(now[0]))
