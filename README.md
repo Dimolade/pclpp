@@ -31,12 +31,37 @@ class PBC {
 
 main {
   new PBC pbc;
+  edit (pbc.test)
+  {
+    pbc.test += 3;
+  }
   returnset pbc.test;
 }
 ```
+> The above code returns 15.
 To return the address of a variable instead, put an Asterix (*) after the full usage.<br>
 `returnset pbc.test*;` <br>
 > Sets r0 to the address of pbc.test
+---
+### Calling C++ Function using Libraries
+
+```cpp
+int MyCPPFunction()
+{
+  return 45;
+}
+PCLPP pclpp;
+PCLPP_Library& pclpplib;
+pclpplib.Link("MyCPPFunction", "MyNamespace", (uint32_t)MyCPPFunction);
+pclpp.AddLibrary(pclpplib);
+```
+```cpp
+main {
+  call returnedVal MyNamespace.MyCPPFunction();
+  returnset returnedVal;
+}
+```
+> The above code returns 45.
 
 # How the Language works
 ---
@@ -49,19 +74,8 @@ A local variable ALWAYS stores an Address to memory. All this wouldnt be possibl
 - Allocate
 - Free
 
-Im still working on adding custom functions, which will work like this:
-```cpp
-#define MyCPPFunction (address)
-
-main {
-  call returnedVal MyCPPFunction();
-  returnset returnedVal;
-}
-```
-Class functions also are a big goal, but will be very difficult.
-
-### Credits
+# Credits
 ---
-Dimolade - Compiler
-[Kynex7510 - CTRL Library](https://github.com/kynex7510/CTRL)
-[ridiculousfish - libdivide](https://github.com/ridiculousfish/libdivide)
+Dimolade - Compiler<br>
+[Kynex7510 - CTRL Library](https://github.com/kynex7510/CTRL)<br>
+[ridiculousfish - libdivide](https://github.com/ridiculousfish/libdivide)<br>
