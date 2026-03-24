@@ -320,7 +320,6 @@ public:
                 b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                 b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
                 b.assembly.CallFunction(funcB.assembly.startAddress);
-                std::cout << "Offset: " << std::to_string(mr.index) << " Address: " << std::to_string(funcB.assembly.startAddress) << std::endl;
                 b.assembly.PUSH(1 << 0);
                 b.assembly.MOVRR(0,9);
                 b.assembly.POP(1 << 9);

@@ -28,7 +28,7 @@ class Assembly
 public:
     std::vector<uint8_t> code;
     uint32_t startAddress = 0;
-    uint instructs = 0;
+    uint32_t instructs = 0;
     inline uint32_t InstructionOffset()
     {
         return instructs > 0 ? (instructs-1)*4 : 0;
