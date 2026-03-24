@@ -86,8 +86,17 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             continue;
         }
     }
-    PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
-    PCLPP->blocks.back().assembly.CallFunction(add.address);
+
+    if (!PCLPP->AddressIsClass(funcName, namespaceName))
+    {
+        PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
+        PCLPP->blocks.back().assembly.CallFunction(add.address);
+    }
+    else
+    {
+        PCLPP->CallClassFunction(namespaceName, funcName, PCLPP->blocks.back());
+    }
+
     if (outvarName != "")
     {
         PCLPP->blocks.back().assembly.PUSH(1 << 0);

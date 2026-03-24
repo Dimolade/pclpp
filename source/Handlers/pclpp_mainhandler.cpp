@@ -1,4 +1,5 @@
 #include "pclpp_mainhandler.h"
+#include "../assemblinizer_jit.h"
 #include "../plcpp_compiler.hpp"
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
@@ -14,6 +15,13 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         PCLPP->blocks.back().assembly.MOVRR(14, 11);
         PCLPP->blocks.back().assembly.BXLR();
         PCLPP->inBlock = false;
+        if (PCLPP->blocks.back().type == PCLPP_Block_Type::Function)
+        {
+            if (PCLPP->allowAutoBlockInitialization)
+            {
+                Assemblinizer::Get(PCLPP->blocks.back().assembly); // init to get the startAddress
+            }
+        }
         return;
     }
     if (token != "main") return;

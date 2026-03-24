@@ -19,6 +19,7 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
             child->name = v.name;
             child->index = PCLPP->localVarCount;
             child->size = 4;
+            child->type = newc.name;
             LoadClassRecursive(PCLPP,newc, b, child);
             continue;
         }
@@ -35,6 +36,7 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
             child->name = v.name;
             child->index = PCLPP->localVarCount;
             child->size = newc.byteSize;
+            child->type = newc.name;
         }
     }
 }

@@ -139,6 +139,7 @@ public:
     uint16_t index;
     uint8_t size;
     std::string name;
+    std::string type = "";
     std::vector<PCLPP_MemoryReference> children;
 };
 
@@ -213,6 +214,7 @@ public:
     std::vector<PCLPP_Class> classes;
     std::vector<PCLPP_Library> libraries;
     bool inBlock = false;
+    bool allowAutoBlockInitialization = true;
     uint16_t localVarCount = 0;
 
     void AddLibrary(PCLPP_Library& l)
@@ -256,6 +258,19 @@ public:
         return;
     }
 
+    std::vector<Assembly&> GetAllFunctions()
+    {
+        std::vector<Assembly&> asmbly;
+        for (PCLPP_Block& b : blocks)
+        {
+            if (b.type != PCLPP_Block_Type::Main)
+            {
+                asmbly.push_back(b.assembly);
+            }
+        }
+        return asmbly;
+    }
+
     PCLPP_Block& GetMain()
     {
         for (PCLPP_Block& b : blocks)
@@ -276,6 +291,44 @@ public:
         {
             std::string t = tokenizer.tokens.Advance();
             if (!t.empty()) handlers.Call(this, t);
+        }
+    }
+
+    bool AddressIsClass(std::string name, std::string name_space)
+    {
+        for (PCLPP_Library& l : libraries)
+        {
+            for (PCLPP_Library_Link& ll : l.links)
+            {
+                if (ll.name_space == name_space && ll.name == name)
+                {
+                    return false;
+                }
+            }
+        }
+        return true; // assume true, obviously this is an optimization and not lazyness
+    }
+
+    void CallClassFunction(std::string varName, std::string funcName, PCLPP_Block& b)
+    {
+        for (PCLPP_MemoryReference& mr : b.memoryReferences)
+        {
+            if (mr.name == varName)
+            {
+                int blockIndex = 0;
+                PCLPP_Class& c = GetClass(mr.type);
+                for (PCLPP_Class_Function& f : c.functions)
+                {
+                    if (f.name == funcName)
+                    {
+                        blockIndex = f.blockIndex;
+                        break;
+                    }
+                }
+                PCLPP_Block& funcB = blocks[blockIndex];
+                b.assembly.CallFunction(funcB.assembly.startAddress);
+                break;
+            }
         }
     }
 

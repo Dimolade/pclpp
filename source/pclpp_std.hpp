@@ -11,7 +11,7 @@
 class pclpp_varpool
 {
 public:
-    pclpp_varpool(uint16_t capacity)
+    pclpp_varpool(uint16_t capacity = 65535)
         : data(capacity), used(capacity, false)
     {
         for (int i = capacity - 1; i >= 0; i--)
@@ -32,6 +32,17 @@ public:
         used[index] = true;
 
         return index;
+    }
+
+    void allocateAt(uint16_t index)
+    {
+        if (used[index])
+            return;
+
+        used[index] = true;
+        data[index] = 0;
+
+        return;
     }
 
     void free(uint16_t index)
@@ -70,11 +81,11 @@ public:
         return (uint32_t)calloc(elements, size);
     }
 
-    static inline pclpp_varpool localvariablemanager{65535};
+    static inline pclpp_varpool localvariablemanager;
 
     static uint16_t AllocateLocal(uint32_t value)
     {
-        uint16_t index = localvariablemanager.allocate(value);
+        uint16_t index = localvariablemanager].allocate(value);
         #ifdef pclpp_std_debug
         std::cout << "Allocate Local: " << std::to_string(value) << std::endl;
         std::cout << "Local Index: " << std::to_string(index) << std::endl;
