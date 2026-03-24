@@ -81,11 +81,11 @@ public:
         return (uint32_t)calloc(elements, size);
     }
 
-    static inline pclpp_varpool localvariablemanager;
+    static inline pclpp_varpool localvariablemanager{65535};
 
     static uint16_t AllocateLocal(uint32_t value)
     {
-        uint16_t index = localvariablemanager].allocate(value);
+        uint16_t index = localvariablemanager.allocate(value);
         #ifdef pclpp_std_debug
         std::cout << "Allocate Local: " << std::to_string(value) << std::endl;
         std::cout << "Local Index: " << std::to_string(index) << std::endl;

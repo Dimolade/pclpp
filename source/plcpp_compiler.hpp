@@ -258,19 +258,6 @@ public:
         return;
     }
 
-    std::vector<Assembly&> GetAllFunctions()
-    {
-        std::vector<Assembly&> asmbly;
-        for (PCLPP_Block& b : blocks)
-        {
-            if (b.type != PCLPP_Block_Type::Main)
-            {
-                asmbly.push_back(b.assembly);
-            }
-        }
-        return asmbly;
-    }
-
     PCLPP_Block& GetMain()
     {
         for (PCLPP_Block& b : blocks)
