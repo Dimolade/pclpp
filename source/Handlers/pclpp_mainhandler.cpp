@@ -2,6 +2,8 @@
 #include "../assemblinizer_jit.h"
 #include "../plcpp_compiler.hpp"
 
+#define mainhandler_debug
+
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
@@ -19,11 +21,15 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         {
             if (PCLPP->allowAutoBlockInitialization)
             {
+                #ifdef mainhandler_debug
                 std::cout << "Instruction Count: " << std::to_string(PCLPP->blocks.back().assembly.instructs) << std::endl;
                 std::cout << "Trying to allocate for Class Function." << std::endl;
+                #endif
                 Assemblinizer::Get(PCLPP->blocks.back().assembly, PCLPP->codepageamount); // init to get the startAddress
                 PCLPP->codepageamount++;
+                #ifdef mainhandler_debug
                 std::cout << "Attempted Start Address: " << std::to_string(PCLPP->blocks.back().assembly.startAddress) << std::endl;
+                #endif
             }
         }
         return;
