@@ -33,7 +33,7 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.PUSH(1 << 0);
     b.assembly.PUSH(1 << 1);
     
-    b.assembly.MOVRR(0, ih.index); // r0: index
+    b.assembly.MOVRImm(0, ih.index); // r0: index
     b.assembly.MOVRR(1, ih.reg); // r1: value
     b.assembly.PUSH(1 << 1);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
