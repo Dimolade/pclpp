@@ -4,6 +4,7 @@
 #include <vector>
 #include <stack>
 #include <iostream>
+#include "libdivide.h" // https://github.com/ridiculousfish/libdivide/blob/master/libdivide.h
 
 //#define pclpp_std_debug
 
@@ -146,5 +147,11 @@ public:
         std::cout << "Address: " << std::to_string((uint32_t)mem) << std::endl;
         #endif
         return *mem;
+    }
+
+    uint32_t Divide(uint32_t a, uint32_t b)
+    {
+        libdivide::divider<uint32_t> fast_d(b);
+        return a / fast_d;
     }
 };

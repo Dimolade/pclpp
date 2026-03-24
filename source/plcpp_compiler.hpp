@@ -423,6 +423,38 @@ public:
         // original values restored
     }
 
+    void ReadASM(uint8_t size, PCLPP_Block& b)
+    {
+        switch (size)
+        {
+            case 1:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Read8);
+            break;
+            case 2:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Read16);
+            break;
+            case 4:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Read32);
+            break;
+        }
+    }
+
+    void WriteASM(uint8_t size, PCLPP_Block& b)
+    {
+        switch (size)
+        {
+            case 1:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
+            break;
+            case 2:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write16);
+            break;
+            case 4:
+            b.assembly.CallFunction((uint32_t)pclpp_std::Write32);
+            break;
+        }
+    }
+
     void LoadByteClass(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
     {
         if (!c.isByteClass) return;

@@ -59,3 +59,9 @@ main {
 }
 ```
 Class functions also are a big goal, but will be very difficult.
+
+### Credits
+---
+Dimolade - Compiler
+[Kynex7510 - CTRL Library](https://github.com/kynex7510/CTRL)
+[ridiculousfish - libdivide](https://github.com/ridiculousfish/libdivide)
