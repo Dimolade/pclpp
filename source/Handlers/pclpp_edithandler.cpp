@@ -10,8 +10,8 @@ public:
 
 void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP* pclpp)
 {
-    b.assembly.PUSH(1 << 0);
     b.assembly.PUSH(1 << 1);
+    b.assembly.PUSH(1 << 0);
     b.assembly.MOVRImm(0, mr.index);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
     pclpp->ReadASM(mr.size, b);
@@ -33,14 +33,56 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.PUSH(1 << 0);
     b.assembly.PUSH(1 << 1);
     
-    b.assembly.MOVRR(0, ih.index);
-    b.assembly.MOVRR(1, 0);
+    b.assembly.MOVRR(0, ih.index); // r0: index
+    b.assembly.MOVRR(1, ih.reg); // r1: value
     b.assembly.PUSH(1 << 1);
-    b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address, r1: current value of register
-    b.assembly.POP(1 << 1);
-    pclpp->WriteASM(mr.size, b); // write value
+    b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
+    b.assembly.POP(1 << 1); // r1: value
+    pclpp->WriteASM(mr.size, b); // write value to address
 
+    b.assembly.POP(1 << 1);
     b.assembly.POP(1 << 0);
+}
+
+void DivideImm(IndexHolder& ih, PCLPP_Block& b, uint32_t value)
+{
+    b.assembly.PUSH(1 << 1);
+
+    if (ih.reg != 0)
+        b.assembly.PUSH(1 << 0);
+
+    b.assembly.MOVRR(0, ih.reg);
+    b.assembly.MOVRImm(1, value);
+
+    b.assembly.CallFunction((uint32_t)pclpp_std::Divide);
+
+    if (ih.reg != 0)
+        b.assembly.MOVRR(ih.reg, 0);
+
+    if (ih.reg != 0)
+        b.assembly.POP(1 << 0);
+
+    b.assembly.POP(1 << 1);
+}
+
+void DivideRR(IndexHolder& ih, PCLPP_Block& b, uint8_t reg2)
+{
+    b.assembly.PUSH(1 << 1);
+
+    if (ih.reg != 0)
+        b.assembly.PUSH(1 << 0);
+
+    b.assembly.MOVRR(0, ih.reg);
+    b.assembly.MOVRR(1, reg2);
+
+    b.assembly.CallFunction((uint32_t)pclpp_std::Divide);
+
+    if (ih.reg != 0)
+        b.assembly.MOVRR(ih.reg, 0);
+
+    if (ih.reg != 0)
+        b.assembly.POP(1 << 0);
+
     b.assembly.POP(1 << 1);
 }
 
@@ -87,9 +129,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     {
         PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
         IndexHolder& ih = Get(mr.index, holders);
-        now = PCLPP->tokenizer.tokens.Advance();
-        if (now == "}") break;
-        else if (now == "=")
+        if (now == "=")
         {
             now = PCLPP->tokenizer.tokens.Advance();
             if (isdigit(now[0]))
@@ -131,8 +171,29 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
                 b.assembly.ADDRR(ih.reg, ih2.reg, ih.reg);
             }
         }
+        else if (now == "/")
+        {
+            PCLPP->tokenizer.tokens.Advance(); // skip =
+            now = PCLPP->tokenizer.tokens.Advance();
+            if (isdigit(now[0]))
+            {
+                DivideImm(ih, b, stoi(now));
+            }
+            else
+            {
+                PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
+                IndexHolder& ih2 = Get(mr2.index, holders);
+                DivideRR(ih, b, ih2.reg);
+            }
+        }
 
-        PCLPP->tokenizer.tokens.Advance(); // skip semicolon
+        now = PCLPP->tokenizer.tokens.Advance(); // skip semicolon
+        if (now != ";")
+        {
+            PCLPP->tokenizer.tokens.iteration--;
+        }
+        now = PCLPP->tokenizer.tokens.Advance();
+        if (now == "}") break;
     }
 
     // Restore Variables
