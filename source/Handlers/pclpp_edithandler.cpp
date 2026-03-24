@@ -145,8 +145,6 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         else if (now == "exchange") // exchange addresses of 2 References (i hope)
         {
-            PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
-            IndexHolder& ih = Get(mr.index, holders);
             now = PCLPP->tokenizer.tokens.Advance();
             PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
             IndexHolder& ih2 = Get(mr2.index, holders);

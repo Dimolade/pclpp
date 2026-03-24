@@ -1,0 +1,61 @@
+#include "pclpp_classfunctionhandler.h"
+#include "../plcpp_compiler.hpp"
+
+void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_MemoryReference& parent = nullptr)
+{
+    for (PCLPP_Variable& v : c.variables)
+    {
+        PCLPP_Class& newc = PCLPP->GetClass(v.type);
+        if (!newc.isByteClass)
+        {
+            PCLPP_MemoryReference& child = nullptr;
+            if (parent == nullptr)
+            {
+                child = b.memoryReferences.emplace_back()
+            }
+            else
+                child = parent.children.emplace_back();
+            
+            child.name = v.name;
+            child.index = PCLPP->localVarCount;
+            child.size = 4;
+            LoadClassRecursive(PCLPP,newc, b, child);
+            continue;
+        }
+        else
+        {
+            PCLPP_MemoryReference& child = nullptr;
+            if (parent == nullptr)
+            {
+                child = b.memoryReferences.emplace_back()
+            }
+            else
+                child = parent.children.emplace_back();
+            
+            child.name = v.name;
+            child.index = PCLPP->localVarCount;
+            child.size = newc.byteSize;
+        }
+    }
+}
+
+void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
+{
+    if (token != "function") return;
+    if (PCLPP->inBlock) return;
+
+    std::string ClassName = PCLPP->tokenizer.tokens.Advance();
+    PCLPP->tokenizer.tokens.Advance(); // skip "."
+    PCLPP_Class& c = PCLPP->GetClass(ClassName);
+    PCLPP_Class_Function& cf = c.functions.emplace_back();
+    std::string FuncName = PCLPP->tokenizer.tokens.Advance();
+    cf.name = FuncName;
+    cf.blockIndex = PCLPP->blocks.size();
+
+    PCLPP->inBlock = true;
+    PCLPP_Block& b = PCLPP->blocks.emplace_back();
+    b.type = PCLPP_Block_Type::Function;
+    PCLPP->blocks.back().assembly.MOVRR(11, 14);
+    PCLPP->blocks.back().assembly.PUSH(1 << 11);
+    b.assembly.MOVRImm(0, -1);
+}

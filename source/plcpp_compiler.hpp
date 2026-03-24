@@ -160,11 +160,17 @@ public:
     uint32_t offset = 0;
 };
 
+class PCLPP_Class_Function
+{
+    uint32_t blockIndex = 0;
+    std::string name;
+};
+
 class PCLPP_Class
 {
 public:
     std::vector<PCLPP_Variable> variables;
-    std::vector<PCLPP_Block> blocks;
+    std::vector<PCLPP_Class_Function> functions;
     bool isByteClass = false;
     uint8_t byteSize = 0;
     std::string name;
