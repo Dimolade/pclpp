@@ -171,6 +171,44 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
                 b.assembly.ADDRR(ih.reg, ih2.reg, ih.reg);
             }
         }
+        else if (now == "-")
+        {
+            PCLPP->tokenizer.tokens.Advance(); // skip =
+            now = PCLPP->tokenizer.tokens.Advance();
+            if (isdigit(now[0]))
+            {
+                b.assembly.SUBRImm(ih.reg, stoi(now));
+            }
+            else
+            {
+                PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
+                IndexHolder& ih2 = Get(mr2.index, holders);
+                b.assembly.SUBRR(ih.reg, ih2.reg, ih.reg);
+            }
+        }
+        else if (now == "*")
+        {
+            PCLPP->tokenizer.tokens.Advance(); // skip =
+            now = PCLPP->tokenizer.tokens.Advance();
+            if (isdigit(now[0]))
+            {
+                uint8_t storereg = 9;
+                if (ih.reg == storereg)
+                {
+                    storereg = 8;
+                }
+                b.assembly.PUSH(1 << storereg);
+                b.assembly.MOVRImm(storereg, stoi(now));
+                b.assembly.MULRR(ih.reg, storereg);
+                b.assembly.POP(1 << storereg);
+            }
+            else
+            {
+                PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
+                IndexHolder& ih2 = Get(mr2.index, holders);
+                b.assembly.MULRR(ih.reg, ih2.reg, ih.reg);
+            }
+        }
         else if (now == "/")
         {
             PCLPP->tokenizer.tokens.Advance(); // skip =
