@@ -21,7 +21,8 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             {
                 std::cout << "Instruction Count: " << std::to_string(PCLPP->blocks.back().assembly.instructs) << std::endl;
                 std::cout << "Trying to allocate for Class Function." << std::endl;
-                Assemblinizer::Get(PCLPP->blocks.back().assembly); // init to get the startAddress
+                Assemblinizer::Get(PCLPP->blocks.back().assembly, PCLPP->codepageamount); // init to get the startAddress
+                PCLPP->codepageamount++;
                 std::cout << "Attempted Start Address: " << std::to_string(PCLPP->blocks.back().assembly.startAddress) << std::endl;
             }
         }

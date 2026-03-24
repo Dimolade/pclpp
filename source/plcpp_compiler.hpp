@@ -217,6 +217,7 @@ public:
     bool inBlock = false;
     bool allowAutoBlockInitialization = true;
     uint16_t localVarCount = 0;
+    uint32_t codepageamount = 0;
 
     void AddLibrary(PCLPP_Library& l)
     {
