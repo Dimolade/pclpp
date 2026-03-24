@@ -31,9 +31,14 @@ class PBC {
 
 main {
   new PBC pbc;
+  edit (pbc.test)
+  {
+    pbc.test += 3;
+  }
   returnset pbc.test;
 }
 ```
+> The above code returns 15.
 To return the address of a variable instead, put an Asterix (*) after the full usage.<br>
 `returnset pbc.test*;` <br>
 > Sets r0 to the address of pbc.test
@@ -68,3 +73,9 @@ A local variable ALWAYS stores an Address to memory. All this wouldnt be possibl
 - Manage Local Variables
 - Allocate
 - Free
+
+# Credits
+---
+Dimolade - Compiler<br>
+[Kynex7510 - CTRL Library](https://github.com/kynex7510/CTRL)<br>
+[ridiculousfish - libdivide](https://github.com/ridiculousfish/libdivide)<br>

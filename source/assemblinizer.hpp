@@ -96,8 +96,8 @@ public:
 
     inline void CallFunction(uint32_t function)
     {
-        MOVRImm(5,function);
-        BLX(5);
+        MOVRImm(10,function);
+        BLX(10);
     }
 
     inline void BX(uint8_t reg)
@@ -215,6 +215,24 @@ public:
         emit32(0xE0800000 |
             ((rn & 0xF) << 16) |
             ((target & 0xF) << 12) |
+            (rm & 0xF));
+    }
+
+    inline void MULRR(uint8_t target, uint8_t reg, uint8_t with = 16)
+    {
+        uint8_t rm, rs;
+
+        if (with <= 15) {
+            rm = reg;
+            rs = with;
+        } else {
+            rm = target;
+            rs = reg;
+        }
+
+        emit32(0xE0000090 |
+            ((target & 0xF) << 16) |
+            ((rs & 0xF) << 8) |
             (rm & 0xF));
     }
 
