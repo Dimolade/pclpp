@@ -162,6 +162,7 @@ public:
 
 class PCLPP_Class_Function
 {
+public:
     uint32_t blockIndex = 0;
     std::string name;
 };
