@@ -16,7 +16,13 @@ void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, 
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
     b.assembly.MOVRR(targetRegister, 0);
     pclpp->ReadASM(mr.size, b);
-    if (targetRegister != 0)
+    if (targetRegister == 0)
+    {
+        b.assembly.MOVRR(1,0);
+        b.assembly.POP(1 << 0);
+        b.assembly.MOVRR(0,1);
+    }
+    else
         b.assembly.POP(1 << 0);
 
     b.assembly.POP(1 << 1);
@@ -38,7 +44,7 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.POP(1 << 1);
 }
 
-IndexHolder& Get(uint16_t index, std::vector<IndexHolder> hs)
+IndexHolder& Get(uint16_t index, std::vector<IndexHolder>& hs)
 {
     for (IndexHolder& h : hs)
     {
@@ -92,7 +98,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             else
             {
                 PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
-                IndexHolder& ih2 = Get(mr.index, holders);
+                IndexHolder& ih2 = Get(mr2.index, holders);
                 b.assembly.MOVRR(ih.reg, ih2.reg);
             }
         }
@@ -102,7 +108,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             IndexHolder& ih = Get(mr.index, holders);
             now = PCLPP->tokenizer.tokens.Advance();
             PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
-            IndexHolder& ih2 = Get(mr.index, holders);
+            IndexHolder& ih2 = Get(mr2.index, holders);
 
             uint16_t a = mr.index;
             uint16_t b = mr2.index;
@@ -120,7 +126,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             else
             {
                 PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
-                IndexHolder& ih2 = Get(mr.index, holders);
+                IndexHolder& ih2 = Get(mr2.index, holders);
                 b.assembly.ADDRR(ih.reg, ih2.reg, ih.reg);
             }
         }
