@@ -1,4 +1,5 @@
 // https://armconverter.com
+#pragma once
 
 #include <vector>
 #include <cstdint>

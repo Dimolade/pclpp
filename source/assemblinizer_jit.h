@@ -1,4 +1,4 @@
-
+#pragma once
 #define kynex_CTRL
 
 #include "assemblinizer.hpp"
