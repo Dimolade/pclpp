@@ -87,10 +87,12 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
     }
 
+    uint8_t size = 4;
     if (!PCLPP->AddressIsClass(funcName, namespaceName))
     {
         PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
         PCLPP->blocks.back().assembly.CallFunction(add.address);
+        size = add.size;
     }
     else
     {
@@ -103,8 +105,8 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         PCLPP_MemoryReference& MR = PCLPP->blocks.back().memoryReferences.emplace_back();
         MR.name = outvarName;
         MR.index = PCLPP->localVarCount;
-        MR.size = add.size;
-        PCLPP->NewLocalWithValue(PCLPP->blocks.back(), add.size); // r0: value
+        MR.size = size;
+        PCLPP->NewLocalWithValue(PCLPP->blocks.back(), size); // r0: value
         PCLPP->blocks.back().assembly.POP(1 << 0);
     }
     PCLPP->tokenizer.tokens.Advance(); // skip ;
