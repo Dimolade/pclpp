@@ -314,12 +314,12 @@ public:
                     }
                 }
                 PCLPP_Block& funcB = blocks[blockIndex];
-                b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                 b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
                 b.assembly.MOVRImm(9, 0);
                 b.assembly.PUSH(1 << 9);
+                b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                 b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
-                b.assembly.CallFunction(funcB.assembly.startAddress);
+                //b.assembly.CallFunction(funcB.assembly.startAddress);
                 b.assembly.PUSH(1 << 0);
                 b.assembly.MOVRR(0,9);
                 b.assembly.POP(1 << 9);
