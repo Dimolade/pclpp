@@ -17,7 +17,8 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
                 child = &parent->children.emplace_back();
             
             child->name = v.name;
-            child->index = PCLPP->localVarCount;
+            child->index = b.classvarcount;
+            b.classvarcount++;
             child->size = 4;
             child->type = newc.name;
             LoadClassRecursive(PCLPP,newc, b, child);
@@ -34,7 +35,8 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
                 child = &parent->children.emplace_back();
             
             child->name = v.name;
-            child->index = PCLPP->localVarCount;
+            child->index = b.classvarcount;
+            b.classvarcount++;
             child->size = newc.byteSize;
             child->type = newc.name;
         }
@@ -55,7 +57,12 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     cf.blockIndex = PCLPP->blocks.size();
     PCLPP->inBlock = true;
     PCLPP_Block& b = PCLPP->blocks.emplace_back();
-    LoadClassRecursive(PCLPP, c, b);
+    PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();
+    mr.name = "this";
+    mr.size = 4;
+    mr.index = 0;
+    mr.type = c.name;
+    LoadClassRecursive(PCLPP, c, b, &mr);
     b.type = PCLPP_Block_Type::Function;
     PCLPP->blocks.back().assembly.MOVRR(11, 14);
     PCLPP->blocks.back().assembly.PUSH(1 << 11);

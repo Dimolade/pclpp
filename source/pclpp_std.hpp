@@ -82,6 +82,17 @@ public:
     }
 
     static inline pclpp_varpool localvariablemanager{65535};
+    static inline uint16_t thisOffset = 0;
+
+    static void SetThisOffset(uint16_t of)
+    {
+        thisOffset = of;
+    }
+
+    static uint16_t GetThisOffset()
+    {
+        return thisOffset;
+    }
 
     static uint16_t AllocateLocal(uint32_t value)
     {
@@ -99,7 +110,7 @@ public:
         std::cout << "Getting Local: " << std::to_string(index) << std::endl;
         std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
         #endif
-        return localvariablemanager[index];
+        return localvariablemanager[index+thisOffset];
     }
 
     static void UnallocateLocal(uint16_t index)
@@ -107,7 +118,7 @@ public:
         #ifdef pclpp_std_debug
         std::cout << "Unallocate Local: " << std::to_string(index) << std::endl;
         #endif
-        localvariablemanager.free(index);
+        localvariablemanager.free(index+thisOffset);
     }
 
     static void Free(uint32_t address)
