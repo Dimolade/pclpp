@@ -310,7 +310,7 @@ public:
         {
             if (mr.name == varName)
             {
-                int blockIndex = 0;
+                uint32_t blockIndex = 0;
                 PCLPP_Class& c = GetClass(mr.type);
                 PCLPP_Class_Function* func = nullptr;
                 for (PCLPP_Class_Function& f : c.functions)
