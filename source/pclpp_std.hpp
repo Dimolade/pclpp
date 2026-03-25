@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 #include <stack>
+#include <queue>
+#include <algorithm>
 #include <iostream>
 #include "libdivide.h" // https://github.com/ridiculousfish/libdivide/blob/master/libdivide.h
 
@@ -25,7 +27,7 @@ public:
         if (freeList.empty())
             return -1;
 
-        uint16_t index = freeList.top();
+        uint16_t index = freeList.front();
         freeList.pop();
 
         data[index] = value;
@@ -79,7 +81,7 @@ public:
 private:
     std::vector<uint32_t> data;
     std::vector<bool> used;
-    std::stack<uint16_t> freeList;
+    std::queue<uint16_t> freeList;
 };
 
 class pclpp_std
