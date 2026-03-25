@@ -322,13 +322,14 @@ public:
                     }
                 }
                 PCLPP_Block& funcB = blocks[blockIndex];
+                uint16_t to;
                 if (funcB.noffset == false)
                 {
                     b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
                     b.assembly.MOVRR(9, 0);
                     b.assembly.PUSH(1 << 9);
                     b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
-                    uint16_t to = currentThisOffset;
+                    to = currentThisOffset;
                     currentThisOffset = mr.index;
                     b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
                 }
