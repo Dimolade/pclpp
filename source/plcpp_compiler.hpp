@@ -493,7 +493,10 @@ public:
     void NewLocal(PCLPP_Block& b)
     {
         b.assembly.PUSH(1 << 0);
+        b.assembly.PUSH(1 << 1);
+        b.assembly.MOVRImm(1, localVarCount);
         b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.assembly.POP(1 << 1);
         b.assembly.POP(1 << 0);
         b.myLocals.push_back(localVarCount);
         localVarCount++;

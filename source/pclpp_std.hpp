@@ -110,12 +110,13 @@ public:
         return thisOffset;
     }
 
-    static uint16_t AllocateLocal(uint32_t value)
+    static uint16_t AllocateLocal(uint32_t value, uint16_t index)
     {
-        uint16_t index = localvariablemanager.allocate(value);
+        localvariablemanager.allocateAt(index);
+        localvariablemanager[index] = value;
         #ifdef pclpp_std_debug
-        std::cout << "Allocate Local: " << std::to_string(value) << std::endl;
-        std::cout << "Local Index: " << std::to_string(index) << std::endl;
+        std::cout << "Allocate Local: " << std::to_string(index) << std::endl;
+        std::cout << "Value: " << std::to_string(value) << std::endl;
         #endif
         return index;
     }
