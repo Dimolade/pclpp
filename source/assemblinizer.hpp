@@ -61,7 +61,7 @@ public:
 
     inline void unalloc()
     {
-        if (codeRegion != nullptr)
+        if (codeRegion != nullptr && startAddress != 0)
             ctrlDestroyCodeRegion(&codeRegion);
     }
 #else
