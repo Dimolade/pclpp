@@ -15,9 +15,11 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         PCLPP->blocks.back().assembly.MOVRR(0, 12);
         PCLPP->blocks.back().assembly.POP(1 << 11);
         PCLPP->blocks.back().assembly.MOVRR(14, 11);
-        PCLPP->blocks.back().assembly.BXLR();
+        if (PCLPP->blocks.back().inl == false)
+            PCLPP->blocks.back().assembly.BXLR();
+        
         PCLPP->inBlock = false;
-        if (PCLPP->blocks.back().type == PCLPP_Block_Type::Function)
+        if (PCLPP->blocks.back().type == PCLPP_Block_Type::Function && PCLPP->blocks.back().inl == false)
         {
             if (PCLPP->allowAutoBlockInitialization)
             {

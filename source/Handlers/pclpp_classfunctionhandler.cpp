@@ -47,16 +47,25 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token != "function") return;
     if (PCLPP->inBlock) return;
-
-    std::string ClassName = PCLPP->tokenizer.tokens.Advance();
+    std::string ClassName;
+    bool inl = false;
+    loop:
+    ClassName = PCLPP->tokenizer.tokens.Advance();
+    if (ClassName == "inline")
+    {
+        inl = true;
+        goto loop;
+    }
     PCLPP->tokenizer.tokens.Advance(); // skip "."
     PCLPP_Class& c = PCLPP->GetClass(ClassName);
     PCLPP_Class_Function& cf = c.functions.emplace_back();
     std::string FuncName = PCLPP->tokenizer.tokens.Advance();
     cf.name = FuncName;
     cf.blockIndex = PCLPP->blocks.size();
+    cf.inl = inl;
     PCLPP->inBlock = true;
     PCLPP_Block& b = PCLPP->blocks.emplace_back();
+    b.inl = inl;
     PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();
     mr.name = "this";
     mr.size = 4;
