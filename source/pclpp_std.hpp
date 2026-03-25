@@ -126,15 +126,17 @@ public:
         std::cout << "Getting Local: " << std::to_string(index) << std::endl;
         std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
         #endif
-        return localvariablemanager[index+(thisOffset*useOffset)];
+        if (useOffset == 1)
+            return localvariablemanager[index+thisOffset];
+        return localvariablemanager[index];
     }
 
-    static void UnallocateLocal(uint16_t index, uint8_t useOffset)
+    static void UnallocateLocal(uint16_t index)
     {
         #ifdef pclpp_std_debug
         std::cout << "Unallocate Local: " << std::to_string(index) << std::endl;
         #endif
-        localvariablemanager.free(index+(thisOffset*useOffset));
+        localvariablemanager.free(index);
     }
 
     static void Free(uint32_t address)
