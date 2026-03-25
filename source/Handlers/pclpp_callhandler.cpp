@@ -8,6 +8,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     uint32_t addressToCall = 0;
     std::string namespaceName = "";
+    std::vector<std::string> functionNames;
     std::string funcName = "";
     std::string outvarName = "";
 
@@ -17,6 +18,8 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     {
         collection.push_back(PCLPP->tokenizer.tokens.Advance());
     } // example: varName functionName ( <- Minimal
+
+    bool isFunc = false;
 
     if (collection.size() == 3)
     {
@@ -37,6 +40,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         outvarName = collection[0];
         namespaceName = collection[1]; // dot follows
         funcName = collection[3];
+        functionNames.push_back(namespaceName);
     }
 
     collection.clear();
@@ -67,18 +71,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             std::string next = PCLPP->tokenizer.tokens.Advance(); // either ; or *
             if (next == ",")
             {
-                switch (mr.size)
-                {
-                    case 1:
-                    PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read8);
-                    break;
-                    case 2:
-                    PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read16);
-                    break;
-                    case 4:
-                    PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read32);
-                    break;
-                }
+                PCLPP->ReadASM(mr.size, PCLPP->blocks.back());
                 PCLPP->tokenizer.tokens.iteration--;
             }
             PCLPP->blocks.back().assembly.MOVRR(argIndex, 0);
@@ -89,7 +82,11 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     }
 
     uint8_t size = 4;
-    if (!PCLPP->AddressIsClass(funcName, namespaceName))
+    if (isFunc == false)
+    {
+        isFunc = PCLPP->AddressIsClass(funcName, namespaceName);
+    }
+    if (!isFunc)
     {
         PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
         PCLPP->blocks.back().assembly.CallFunction(add.address);
