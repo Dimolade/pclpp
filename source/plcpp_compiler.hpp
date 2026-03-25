@@ -154,6 +154,7 @@ public:
     bool inl = false;
     bool noffset = false;
     bool noclean = false;
+    bool nodefault = false;
 };
 
 class PCLPP_Variable
