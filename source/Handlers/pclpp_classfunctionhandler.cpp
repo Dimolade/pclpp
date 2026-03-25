@@ -65,7 +65,7 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     }
     else if (ClassName == "noclean")
     {
-        noffset = true;
+        noclean = true;
         goto loop;
     }
     PCLPP->tokenizer.tokens.Advance(); // skip "."
