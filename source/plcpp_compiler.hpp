@@ -62,6 +62,16 @@ public:
         std::string buffer = "";
         for (int i = 0; i < in.length(); i++)
         {
+            if (buffer == "//")
+            {
+                buffer = "";
+                for (;;)
+                {
+                    i++;
+                    if (in.length() <= i) break;
+                    if (in[i] == '\n') break;
+                }
+            }
             if (in[i] == ' ' || in[i] == '\n')
             {
                 if (buffer != "")
@@ -490,7 +500,7 @@ public:
     {
         b.assembly.PUSH(1 << 1);
         b.assembly.PUSH(1 << 0);
-        
+
         b.assembly.MOVRR(1, 0);
         b.assembly.MOVRImm(0, size);
         b.assembly.PUSH(1 << 1);
