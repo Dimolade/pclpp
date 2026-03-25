@@ -36,13 +36,16 @@ public:
         return index;
     }
 
-    void allocateAt(uint16_t index)
+    void allocateAt(uint16_t index, uint32_t value)
     {
         if (used[index])
+        {
+            data[index] = value;
             return;
+        }
 
         used[index] = true;
-        data[index] = 0;
+        data[index] = value;
 
         return;
     }
@@ -112,8 +115,7 @@ public:
 
     static uint16_t AllocateLocal(uint32_t value, uint16_t index)
     {
-        localvariablemanager.allocateAt(index);
-        localvariablemanager[index] = value;
+        localvariablemanager.allocateAt(index, value);
         #ifdef pclpp_std_debug
         std::cout << "Allocate Local: " << std::to_string(index) << std::endl;
         std::cout << "Value: " << std::to_string(value) << std::endl;
