@@ -151,6 +151,7 @@ public:
     uint8_t size;
     std::string name;
     std::string type = "";
+    bool partofthis = false;
     std::vector<PCLPP_MemoryReference> children;
 };
 
@@ -472,6 +473,7 @@ public:
             }
             if (!found) continue;
             blocks.back().assembly.MOVRImm(0, mrr.index);
+            blocks.back().assembly.MOVRImm(1, mrr.partofthis);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
             UnallocateMR(b, mrr.children);

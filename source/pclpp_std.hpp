@@ -120,21 +120,21 @@ public:
         return index;
     }
 
-    static uint32_t GetLocal(uint16_t index)
+    static uint32_t GetLocal(uint16_t index, uint8_t useOffset)
     {
         #ifdef pclpp_std_debug
         std::cout << "Getting Local: " << std::to_string(index) << std::endl;
         std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
         #endif
-        return localvariablemanager[index+thisOffset];
+        return localvariablemanager[index+(thisOffset*useOffset)];
     }
 
-    static void UnallocateLocal(uint16_t index)
+    static void UnallocateLocal(uint16_t index, uint8_t useOffset)
     {
         #ifdef pclpp_std_debug
         std::cout << "Unallocate Local: " << std::to_string(index) << std::endl;
         #endif
-        localvariablemanager.free(index+thisOffset);
+        localvariablemanager.free(index+(thisOffset*useOffset));
     }
 
     static void Free(uint32_t address)

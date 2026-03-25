@@ -13,6 +13,7 @@ void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, 
     b.assembly.PUSH(1 << 1);
     b.assembly.PUSH(1 << 0);
     b.assembly.MOVRImm(0, mr.index); // r0: index
+    b.assembly.MOVRImm(1, mr.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
     pclpp->ReadASM(mr.size, b); // r0: value
     b.assembly.MOVRR(targetRegister, 0);
@@ -45,6 +46,7 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.MOVRR(1, ih.reg); // r1: value
     b.assembly.MOVRImm(0, ih.index); // r0: index
     b.assembly.PUSH(1 << 1);
+    b.assembly.MOVRImm(1, mr.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
     b.assembly.POP(1 << 1); // r1: value
     pclpp->WriteASM(mr.size, b); // write value to address
