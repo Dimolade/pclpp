@@ -28,18 +28,17 @@ class Assembly
 public:
     std::vector<uint8_t> code;
     uint32_t startAddress = 0;
-    uint32_t instructs = 0;
-    inline uint32_t InstructionOffset()
+    uint32_t Instructs()
     {
-        return instructs > 0 ? (instructs-1)*4 : 0;
+        if (code.size() == 0) return 0;
+        return code.size()/4;
     }
-
 #ifdef kynex_CTRL
     CTRLCodeRegion codeRegion = nullptr;
     u8* codeBlockData = nullptr;
     inline void allocStartAddress()
     {
-        codeBlockData = ctrlAllocCodeBlock(&codeRegion, instructs*4);
+        codeBlockData = ctrlAllocCodeBlock(&codeRegion, code.size());
     }
 
     inline void allocStartAddress_AfterCommit(int index = 0)
@@ -55,7 +54,7 @@ public:
     inline void setupInstructions()
     {
         if (codeBlockData) {
-            memcpy(codeBlockData, code.data(), instructs*4);
+            memcpy(codeBlockData, code.data(), code.size());
         }
     }
 
@@ -89,7 +88,6 @@ public:
         for (int i = 3; i >= 0; i--)
             code.push_back((opcode >> (i * 8)) & 0xFF);
 #endif
-        instructs++;
     }
 
     inline void NOP()
@@ -271,7 +269,7 @@ public:
     {
         std::ostringstream oss;
 
-        size_t words = instructs;
+        size_t words = Instructs();
         for (size_t i = 0; i < words; ++i)
         {
             uint32_t word = code[i*4] |
