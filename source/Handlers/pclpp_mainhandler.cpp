@@ -8,19 +8,16 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
     {
-        PCLPP->blocks.back().assembly.MOVRR(12, 0);
-        PCLPP->blocks.back().assembly.PUSH(1 << 12);
+        PCLPP->blocks.back().assembly.PUSH(1 << 0);
         PCLPP->UnallocateBlock(PCLPP->blocks.back());
-        PCLPP->blocks.back().assembly.POP(1 << 12);
-        PCLPP->blocks.back().assembly.MOVRR(0, 12);
+        PCLPP->blocks.back().assembly.POP(1 << 0);
+        PCLPP->inBlock = false;
         if (PCLPP->blocks.back().inl == false)
         {
             PCLPP->blocks.back().assembly.POP(1 << 11);
             PCLPP->blocks.back().assembly.MOVRR(14, 11);
             PCLPP->blocks.back().assembly.BXLR();
         }
-        
-        PCLPP->inBlock = false;
         if (PCLPP->blocks.back().type == PCLPP_Block_Type::Function && PCLPP->blocks.back().inl == false)
         {
             if (PCLPP->allowAutoBlockInitialization)
@@ -43,6 +40,7 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     if (next != "{") return;
     PCLPP->inBlock = true;
     PCLPP_Block& b = PCLPP->blocks.emplace_back();
+    b.inl = false;
     b.type = PCLPP_Block_Type::Main;
     PCLPP->blocks.back().assembly.MOVRR(11, 14);
     PCLPP->blocks.back().assembly.PUSH(1 << 11);
