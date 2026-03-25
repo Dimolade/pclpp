@@ -43,6 +43,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     int argIndex = 0;
     std::string now = PCLPP->tokenizer.tokens.Advance();
+    PCLPP->blocks.back().assembly.PUSH(1 << 0);
     while (now != ")")
     {
         if (now == ",")
@@ -101,7 +102,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     if (outvarName != "")
     {
-        PCLPP->blocks.back().assembly.PUSH(1 << 0);
+        PCLPP->blocks.back().assembly.PUSH(1 << 0); // r0: output from function
         PCLPP_MemoryReference& MR = PCLPP->blocks.back().memoryReferences.emplace_back();
         MR.name = outvarName;
         MR.index = PCLPP->localVarCount;
@@ -109,5 +110,6 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         PCLPP->NewLocalWithValue(PCLPP->blocks.back(), size); // r0: value
         PCLPP->blocks.back().assembly.POP(1 << 0);
     }
+    PCLPP->blocks.back().assembly.POP(1 << 0);
     PCLPP->tokenizer.tokens.Advance(); // skip ;
 }
