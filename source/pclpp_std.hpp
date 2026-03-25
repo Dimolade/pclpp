@@ -16,7 +16,7 @@ public:
     pclpp_varpool(uint16_t capacity = 65535)
         : data(capacity), used(capacity, false)
     {
-        for (int i = capacity - 1; i >= 0; i--)
+        for (int i = 0; i < capacity; i++)
         {
             freeList.push(i);
         }
