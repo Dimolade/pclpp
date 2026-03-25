@@ -151,7 +151,7 @@ public:
     uint8_t size;
     std::string name;
     std::string type = "";
-    bool partofthis = false;
+    uint8_t partofthis = 0;
     std::vector<PCLPP_MemoryReference> children;
 };
 
