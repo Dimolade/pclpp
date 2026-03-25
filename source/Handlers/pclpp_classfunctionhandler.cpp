@@ -74,7 +74,10 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     b.classvarcount++;
     LoadClassRecursive(PCLPP, c, b, &mr);
     b.type = PCLPP_Block_Type::Function;
-    PCLPP->blocks.back().assembly.MOVRR(11, 14);
-    PCLPP->blocks.back().assembly.PUSH(1 << 11);
+    if (!inl)
+    {
+        PCLPP->blocks.back().assembly.MOVRR(11, 14);
+        PCLPP->blocks.back().assembly.PUSH(1 << 11);
+    }
     b.assembly.MOVRImm(0, -1);
 }

@@ -442,6 +442,13 @@ public:
     {
         for (PCLPP_MemoryReference& mrr : mr)
         {
+            bool found = false;
+            for (uint16_t index : b.myLocals)
+            {
+                found = index == mrr.index;
+                if (found) break;
+            }
+            if (!found) continue;
             blocks.back().assembly.MOVRImm(0, mrr.index);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
