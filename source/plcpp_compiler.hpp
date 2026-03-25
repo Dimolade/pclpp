@@ -62,15 +62,16 @@ public:
         std::string buffer = "";
         for (int i = 0; i < in.length(); i++)
         {
-            if (buffer == "//")
+            if (in[i] == '/' && i + 1 < in.length() && in[i+1] == '/')
             {
-                buffer = "";
-                for (;;)
-                {
-                    i++;
-                    if (in.length() <= i) break;
-                    if (in[i] == '\n') break;
+                if (!buffer.empty()) {
+                    tokens.push_back(buffer);
+                    buffer = "";
                 }
+                while (i < in.length() && in[i] != '\n') {
+                    i++;
+                }
+                continue;
             }
             if (in[i] == ' ' || in[i] == '\n')
             {
