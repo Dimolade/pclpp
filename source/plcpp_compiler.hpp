@@ -152,6 +152,8 @@ public:
     uint16_t classvarcount = 0;
     std::vector<uint16_t> myLocals;
     bool inl = false;
+    bool noffset = false;
+    bool noclean = false;
 };
 
 class PCLPP_Variable
@@ -320,13 +322,16 @@ public:
                     }
                 }
                 PCLPP_Block& funcB = blocks[blockIndex];
-                b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
-                b.assembly.MOVRR(9, 0);
-                b.assembly.PUSH(1 << 9);
-                b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
-                uint16_t to = currentThisOffset;
-                currentThisOffset = mr.index;
-                b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                if (funcB.noffset == false)
+                {
+                    b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
+                    b.assembly.MOVRR(9, 0);
+                    b.assembly.PUSH(1 << 9);
+                    b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
+                    uint16_t to = currentThisOffset;
+                    currentThisOffset = mr.index;
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                }
                 if (func->inl)
                 {
                     b.assembly.code.reserve(b.assembly.code.size()+funcB.assembly.code.size());
@@ -336,12 +341,15 @@ public:
                 {
                     b.assembly.CallFunction(funcB.assembly.startAddress); // r0: return
                 }
-                b.assembly.PUSH(1 << 0); // r0: return, ??
-                b.assembly.MOVRR(0,9);
-                b.assembly.POP(1 << 9);
-                b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
-                currentThisOffset = to;
-                b.assembly.POP(1 << 0); // r0: return
+                if (funcB.noffset == false)
+                {
+                    b.assembly.PUSH(1 << 0); // r0: return, ??
+                    b.assembly.MOVRR(0,9);
+                    b.assembly.POP(1 << 9);
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    currentThisOffset = to;
+                    b.assembly.POP(1 << 0); // r0: return
+                }
                 break;
             }
         }

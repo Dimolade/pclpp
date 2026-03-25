@@ -49,11 +49,23 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     if (PCLPP->inBlock) return;
     std::string ClassName;
     bool inl = false;
+    bool noffset = false;
+    bool noclean = false;
     loop:
     ClassName = PCLPP->tokenizer.tokens.Advance();
     if (ClassName == "inline")
     {
         inl = true;
+        goto loop;
+    }
+    else if (ClassName == "noffset")
+    {
+        noffset = true;
+        goto loop;
+    }
+    else if (ClassName == "noclean")
+    {
+        noffset = true;
         goto loop;
     }
     PCLPP->tokenizer.tokens.Advance(); // skip "."
@@ -66,6 +78,8 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     PCLPP->inBlock = true;
     PCLPP_Block& b = PCLPP->blocks.emplace_back();
     b.inl = inl;
+    b.noffset = noffset;
+    b.noclean = noclean;
     PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();
     mr.name = "this";
     mr.size = 4;

@@ -8,9 +8,12 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token == "}" && PCLPP->inBlock)
     {
-        PCLPP->blocks.back().assembly.PUSH(1 << 0);
-        PCLPP->UnallocateBlock(PCLPP->blocks.back());
-        PCLPP->blocks.back().assembly.POP(1 << 0);
+        if (PCLPP->blocks.back().noclean == false)
+        {
+            PCLPP->blocks.back().assembly.PUSH(1 << 0);
+            PCLPP->UnallocateBlock(PCLPP->blocks.back());
+            PCLPP->blocks.back().assembly.POP(1 << 0);
+        }
         PCLPP->inBlock = false;
         if (PCLPP->blocks.back().inl == false)
         {
