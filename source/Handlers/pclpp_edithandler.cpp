@@ -6,6 +6,7 @@ class IndexHolder
 public:
     uint16_t index;
     uint8_t reg;
+    uint8_t partofthis;
 };
 
 void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP* pclpp)
@@ -46,7 +47,7 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.MOVRR(1, ih.reg); // r1: value
     b.assembly.MOVRImm(0, ih.index); // r0: index
     b.assembly.PUSH(1 << 1);
-    b.assembly.MOVRImm(1, mr.partofthis);
+    b.assembly.MOVRImm(1, ih.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
     b.assembly.POP(1 << 1); // r1: value
     pclpp->WriteASM(mr.size, b); // write value to address
@@ -134,6 +135,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         IndexHolder& ih = holders.emplace_back();
         ih.index = mrrs[i].index;
         ih.reg = i;
+        ih.partofthis = mrrs[i].partofthis;
         LoadVar(i, mrrs[i], b, PCLPP); // load all vars into their registers
     }
     now = PCLPP->tokenizer.tokens.data[PCLPP->tokenizer.tokens.iteration-1];
