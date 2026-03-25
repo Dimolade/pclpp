@@ -270,7 +270,7 @@ public:
     {
         std::ostringstream oss;
 
-        size_t words = code.size() / 4;
+        size_t words = instructs;
         for (size_t i = 0; i < words; ++i)
         {
             uint32_t word = code[i*4] |
