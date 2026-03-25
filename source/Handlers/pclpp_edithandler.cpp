@@ -164,8 +164,12 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
             uint16_t a = mr.index;
             uint16_t b = mr2.index;
+            uint8_t partofthisa = mr.partofthis;
+            uint8_t partofthisb = mr2.partofthis;
             mr.index = b;
+            mr.partofthis = partofthisb;
             mr2.index = a;
+            mr2.partofthis = partofthisa;
         }
         else if (now == "+")
         {
