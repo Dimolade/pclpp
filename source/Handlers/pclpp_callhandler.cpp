@@ -107,9 +107,9 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         MR.name = outvarName;
         MR.index = PCLPP->localVarCount;
         MR.size = size;
-        PCLPP->NewLocalWithValue(PCLPP->blocks.back(), size); // r0: value
-        PCLPP->blocks.back().assembly.POP(1 << 0);
+        PCLPP->NewLocalWithValue(PCLPP->blocks.back(), size); // r0: ??
+        PCLPP->blocks.back().assembly.POP(1 << 0); // r0: output from function
     }
-    PCLPP->blocks.back().assembly.POP(1 << 0);
+    PCLPP->blocks.back().assembly.POP(1 << 0); // r0: previous value
     PCLPP->tokenizer.tokens.Advance(); // skip ;
 }

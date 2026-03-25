@@ -161,6 +161,10 @@ public:
     {
         uint32_t* mem = (uint32_t*)address;
         *mem = value;
+        #ifdef pclpp_std_debug
+        std::cout << "Writing to address " << std::to_string(address) << std::endl;
+        std::cout << "Value: " << std::to_string(value) << std::endl;
+        #endif
     }
 
     static uint8_t Read8(uint32_t address)
