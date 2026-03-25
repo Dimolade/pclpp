@@ -340,8 +340,7 @@ public:
                 if (funcB.noffset == false)
                 {
                     b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
-                    b.assembly.MOVRR(9, 0);
-                    b.assembly.PUSH(1 << 9);
+                    b.assembly.PUSH(1 << 0);
                     b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                     to = currentThisOffset;
                     currentThisOffset = mr.index;
@@ -358,12 +357,13 @@ public:
                 }
                 if (funcB.noffset == false)
                 {
-                    b.assembly.PUSH(1 << 0); // r0: return, ??
-                    b.assembly.MOVRR(0,9);
-                    b.assembly.POP(1 << 9);
+                    b.assembly.MOVRR(1, 0); // r1: return
+                    b.assembly.POP(1 << 0); // r0: previous offset
+                    b.assembly.PUSH(1 << 1);
                     b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
                     currentThisOffset = to;
-                    b.assembly.POP(1 << 0); // r0: return
+                    b.assembly.POP(1 << 1);
+                    b.assembly.MOVRR(0, 1);
                 }
                 break;
             }
