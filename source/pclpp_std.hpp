@@ -54,6 +54,20 @@ public:
         freeList.push(index);
     }
 
+    void clear()
+    {
+        while (!freeList.empty()) {
+            freeList.pop();
+        }
+
+        std::fill(used.begin(), used.end(), false);
+
+        for (int i = static_cast<int>(data.size()) - 1; i >= 0; i--)
+        {
+            freeList.push(static_cast<uint16_t>(i));
+        }
+    }
+
     uint32_t& operator[](uint16_t index)
     {
         if (!used[index])
