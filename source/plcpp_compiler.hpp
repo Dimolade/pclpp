@@ -287,6 +287,7 @@ public:
             std::string t = tokenizer.tokens.Advance();
             if (!t.empty()) handlers.Call(this, t);
         }
+        GetMainAssembly().BXLR(); // Make sure it returns, if not im crashing out
     }
 
     bool AddressIsClass(std::string name, std::string name_space)

@@ -73,6 +73,7 @@ public:
 
     inline void emit32(uint32_t opcode, bool reverseWord = false)
     {
+        code.reserve(code.size()+4);
         if (reverseWord) {
             // Swap byte order: 0xE12FFF1E <-> 0x1EFF2FE1
             opcode = ((opcode & 0x000000FF) << 24) |
