@@ -92,11 +92,13 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
     {
         parent.size = c.byteSize;
         parent.index = PCLPP->localVarCount;
+        parent.type = c.name;
         PCLPP->LoadByteClass(c, b.assembly, b, 0);
         return;
     }
     else
     {
+        parent.type = c.name;
         parent.size = 4;
         parent.index = PCLPP->localVarCount;
         PCLPP->LoadClassAsAddress(c, b.assembly, b);
