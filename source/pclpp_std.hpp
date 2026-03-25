@@ -70,10 +70,10 @@ public:
         }
     }
 
-    uint32_t& operator[](uint16_t index)
+    uint32_t operator[](uint16_t index)
     {
         if (!used[index])
-            return;
+            return 65535;
 
         return data[index];
     }
