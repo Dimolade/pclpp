@@ -26,7 +26,7 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             if (PCLPP->allowAutoBlockInitialization)
             {
                 #ifdef mainhandler_debug
-                std::cout << "Instruction Count: " << std::to_string(PCLPP->blocks.back().assembly.instructs) << std::endl;
+                std::cout << "Instruction Count: " << std::to_string(PCLPP->blocks.back().assembly.Instructs()) << std::endl;
                 std::cout << "Trying to allocate for Class Function." << std::endl;
                 #endif
                 Assemblinizer::Get(PCLPP->blocks.back().assembly, PCLPP->codepageamount); // init to get the startAddress
