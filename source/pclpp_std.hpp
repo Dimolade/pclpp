@@ -118,7 +118,6 @@ public:
         localvariablemanager.allocateAt(index, value);
         #ifdef pclpp_std_debug
         std::cout << "Allocate Local: " << std::to_string(index) << std::endl;
-        std::cout << "Value: " << std::to_string(value) << std::endl;
         #endif
         return index;
     }
@@ -127,7 +126,7 @@ public:
     {
         #ifdef pclpp_std_debug
         std::cout << "Getting Local: " << std::to_string(index) << std::endl;
-        std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
+        std::cout << "Use Offset?" << std::to_string(useOffset) << std::endl;
         #endif
         if (useOffset == 1)
             return localvariablemanager[index+thisOffset];
