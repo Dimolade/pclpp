@@ -71,7 +71,22 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         else
         {
             PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
+            PCLPP_Class& c = PCLPP->GetClass(mr.type);
             PCLPP->blocks.back().assembly.PUSHUNSAFE();
+            if (c.isByteClass == false)
+            {
+                // pass index of local instead of address
+                PCLPP->blocks.back().assembly.MOVRImm(0, mr.index);
+                std::string next = PCLPP->tokenizer.tokens.Advance(); // either ; or *
+                PCLPP->tokenizer.tokens.iteration--;
+                if (next == "*")
+                {
+                    goto original;
+                }
+                now = PCLPP->tokenizer.tokens.Advance();
+                continue;
+            }
+            original:
             PCLPP->blocks.back().assembly.MOVRImm(0, mr.index);
             PCLPP->blocks.back().assembly.MOVRImm(1, mr.partofthis);
             PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
