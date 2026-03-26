@@ -344,7 +344,9 @@ public:
                     b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                     to = currentThisOffset;
                     currentThisOffset = mr.index;
-                    //b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    b.assembly.PUSHEVERYTHING();
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    b.assembly.POPEVERYTHING();
                 }
                 if (func->inl)
                 {
@@ -359,10 +361,10 @@ public:
                 {
                     b.assembly.MOVRR(1, 0); // r1: return
                     b.assembly.POP(1 << 0); // r0: previous offset
-                    b.assembly.PUSH(1 << 1);
-                    //b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    b.assembly.PUSHEVERYTHING();
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
                     currentThisOffset = to;
-                    b.assembly.POP(1 << 1);
+                    b.assembly.POPEVERYTHING();
                     b.assembly.MOVRR(0, 1);
                 }
                 break;

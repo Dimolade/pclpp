@@ -8,7 +8,7 @@
 #include <iostream>
 #include "libdivide.h" // https://github.com/ridiculousfish/libdivide/blob/master/libdivide.h
 
-#define pclpp_std_debug
+//#define pclpp_std_debug
 
 class pclpp_varpool
 {

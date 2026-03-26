@@ -133,6 +133,16 @@ public:
         emit32(0x3F00BDE8, true);
     }
 
+    inline void PUSHEVERYTHING()
+    {
+        emit32(0xFF032DE9, true);
+    }
+
+    inline void POPEVERYTHING()
+    {
+        emit32(0xFF03BDE8, true);
+    }
+
     inline void PUSH(uint32_t regMask)
     {
         emit32(0xE92D0000 | regMask);
