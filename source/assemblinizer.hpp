@@ -125,12 +125,12 @@ public:
 
     inline void PUSHUNSAFE()
     {
-        emit32(0x3F002DE9, true);
+        emit32(0x1F002DE9, true);
     }
 
     inline void POPUNSAFE()
     {
-        emit32(0x3F00BDE8, true);
+        emit32(0x1F00BDE8, true);
     }
 
     inline void PUSHEVERYTHING()
