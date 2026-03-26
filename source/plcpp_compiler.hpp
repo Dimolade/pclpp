@@ -62,6 +62,17 @@ public:
         std::string buffer = "";
         for (int i = 0; i < in.length(); i++)
         {
+            if (in[i] == '/' && i + 1 < in.length() && in[i+1] == '/')
+            {
+                if (!buffer.empty()) {
+                    tokens.push_back(buffer);
+                    buffer = "";
+                }
+                while (i < in.length() && in[i] != '\n') {
+                    i++;
+                }
+                continue;
+            }
             if (in[i] == ' ' || in[i] == '\n')
             {
                 if (buffer != "")
@@ -139,6 +150,8 @@ public:
     uint16_t index;
     uint8_t size;
     std::string name;
+    std::string type = "";
+    uint8_t partofthis = 0;
     std::vector<PCLPP_MemoryReference> children;
 };
 
@@ -148,7 +161,12 @@ public:
     PCLPP_Block_Type type = PCLPP_Block_Type::Function;
     std::vector<PCLPP_MemoryReference> memoryReferences;
     Assembly assembly;
+    uint16_t classvarcount = 0;
     std::vector<uint16_t> myLocals;
+    bool inl = false;
+    bool noffset = false;
+    bool noclean = false;
+    bool nodefault = false;
 };
 
 class PCLPP_Variable
@@ -160,11 +178,19 @@ public:
     uint32_t offset = 0;
 };
 
+class PCLPP_Class_Function
+{
+public:
+    uint32_t blockIndex = 0;
+    std::string name;
+    bool inl = false;
+};
+
 class PCLPP_Class
 {
 public:
     std::vector<PCLPP_Variable> variables;
-    std::vector<PCLPP_Block> blocks;
+    std::vector<PCLPP_Class_Function> functions;
     bool isByteClass = false;
     uint8_t byteSize = 0;
     std::string name;
@@ -206,7 +232,10 @@ public:
     std::vector<PCLPP_Class> classes;
     std::vector<PCLPP_Library> libraries;
     bool inBlock = false;
+    bool allowAutoBlockInitialization = true;
     uint16_t localVarCount = 0;
+    uint32_t codepageamount = 0;
+    uint16_t currentThisOffset = 0;
 
     void AddLibrary(PCLPP_Library& l)
     {
@@ -269,6 +298,75 @@ public:
         {
             std::string t = tokenizer.tokens.Advance();
             if (!t.empty()) handlers.Call(this, t);
+        }
+        //GetMainAssembly().BXLR(); // Make sure it returns, if not im crashing out
+    }
+
+    bool AddressIsClass(std::string name, std::string name_space)
+    {
+        for (PCLPP_Library& l : libraries)
+        {
+            for (PCLPP_Library_Link& ll : l.links)
+            {
+                if (ll.name_space == name_space && ll.name == name)
+                {
+                    return false;
+                }
+            }
+        }
+        return true; // assume true, obviously this is an optimization and not lazyness
+    }
+
+    void CallClassFunction(std::string varName, std::string funcName, PCLPP_Block& b)
+    {
+        for (PCLPP_MemoryReference& mr : b.memoryReferences)
+        {
+            if (mr.name == varName)
+            {
+                uint32_t blockIndex = 0;
+                PCLPP_Class& c = GetClass(mr.type);
+                PCLPP_Class_Function* func = nullptr;
+                for (PCLPP_Class_Function& f : c.functions)
+                {
+                    if (f.name == funcName)
+                    {
+                        blockIndex = f.blockIndex;
+                        func = &f;
+                        break;
+                    }
+                }
+                PCLPP_Block& funcB = blocks[blockIndex];
+                uint16_t to;
+                if (funcB.noffset == false)
+                {
+                    b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
+                    b.assembly.PUSH(1 << 0);
+                    b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
+                    to = currentThisOffset;
+                    currentThisOffset = mr.index;
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                }
+                if (func->inl)
+                {
+                    b.assembly.code.reserve(b.assembly.code.size()+funcB.assembly.code.size());
+                    b.assembly.code.insert(b.assembly.code.end(), funcB.assembly.code.begin(), funcB.assembly.code.end());
+                }
+                else
+                {
+                    b.assembly.CallFunction(funcB.assembly.startAddress); // r0: return
+                }
+                if (funcB.noffset == false)
+                {
+                    b.assembly.MOVRR(1, 0); // r1: return
+                    b.assembly.POP(1 << 0); // r0: previous offset
+                    b.assembly.PUSH(1 << 1);
+                    b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    currentThisOffset = to;
+                    b.assembly.POP(1 << 1);
+                    b.assembly.MOVRR(0, 1);
+                }
+                break;
+            }
         }
     }
 
@@ -367,7 +465,15 @@ public:
     {
         for (PCLPP_MemoryReference& mrr : mr)
         {
+            bool found = false;
+            for (uint16_t index : b.myLocals)
+            {
+                found = index == mrr.index;
+                if (found) break;
+            }
+            if (!found) continue;
             blocks.back().assembly.MOVRImm(0, mrr.index);
+            blocks.back().assembly.MOVRImm(1, mrr.partofthis);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
             UnallocateMR(b, mrr.children);
@@ -387,7 +493,10 @@ public:
     void NewLocal(PCLPP_Block& b)
     {
         b.assembly.PUSH(1 << 0);
+        b.assembly.PUSH(1 << 1);
+        b.assembly.MOVRImm(1, localVarCount);
         b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+        b.assembly.POP(1 << 1);
         b.assembly.POP(1 << 0);
         b.myLocals.push_back(localVarCount);
         localVarCount++;
@@ -397,6 +506,7 @@ public:
     {
         b.assembly.PUSH(1 << 1);
         b.assembly.PUSH(1 << 0);
+
         b.assembly.MOVRR(1, 0);
         b.assembly.MOVRImm(0, size);
         b.assembly.PUSH(1 << 1);
@@ -406,18 +516,8 @@ public:
         NewLocal(b);
         b.assembly.POP(1 << 1);
         // r0: address, r1: value
-        switch (size)
-        {
-            case 1:
-            b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
-            break;
-            case 2:
-            b.assembly.CallFunction((uint32_t)pclpp_std::Write16);
-            break;
-            case 4:
-            b.assembly.CallFunction((uint32_t)pclpp_std::Write32);
-            break;
-        }
+        WriteASM(size, b);
+
         b.assembly.POP(1 << 0);
         b.assembly.POP(1 << 1);
         // original values restored

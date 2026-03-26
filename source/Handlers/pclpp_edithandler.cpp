@@ -12,9 +12,12 @@ void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, 
 {
     b.assembly.PUSH(1 << 1);
     b.assembly.PUSH(1 << 0);
-    b.assembly.MOVRImm(0, mr.index);
-    b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-    pclpp->ReadASM(mr.size, b);
+    b.assembly.MOVRImm(0, mr.index); // r0: index
+    b.assembly.PUSH(1 << 1);
+    b.assembly.MOVRImm(1, mr.partofthis);
+    b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
+    b.assembly.POP(1 << 1);
+    pclpp->ReadASM(mr.size, b); // r0: value
     b.assembly.MOVRR(targetRegister, 0);
     if (targetRegister == 0)
     {
@@ -25,7 +28,16 @@ void LoadVar(uint8_t targetRegister, PCLPP_MemoryReference& mr, PCLPP_Block& b, 
     else
         b.assembly.POP(1 << 0);
 
-    b.assembly.POP(1 << 1);
+    if (targetRegister == 1)
+    {
+        b.assembly.PUSH(1 << 9);
+        b.assembly.MOVRR(9, 1);
+        b.assembly.POP(1 << 1);
+        b.assembly.MOVRR(1,9);
+        b.assembly.POP(1 << 9);
+    }
+    else
+        b.assembly.POP(1 << 1);
 }
 
 void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP* pclpp)
@@ -36,6 +48,7 @@ void ReloadVar(IndexHolder& ih, PCLPP_MemoryReference& mr, PCLPP_Block& b, PCLPP
     b.assembly.MOVRR(1, ih.reg); // r1: value
     b.assembly.MOVRImm(0, ih.index); // r0: index
     b.assembly.PUSH(1 << 1);
+    b.assembly.MOVRImm(1, mr.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal); // r0: address
     b.assembly.POP(1 << 1); // r1: value
     pclpp->WriteASM(mr.size, b); // write value to address
@@ -118,17 +131,20 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     }
     PCLPP->tokenizer.tokens.Advance(); // skip ")"
     PCLPP->tokenizer.tokens.Advance(); // skip "{"
+    holders.reserve(mrrs.size());
     for (int i = 0; i < mrrs.size(); i++)
     {
         IndexHolder& ih = holders.emplace_back();
         ih.index = mrrs[i].index;
-        ih.reg = i;
-        LoadVar(i, mrrs[i], b, PCLPP); // load all vars into their registers
+        ih.reg = i+5;
+        LoadVar(i+5, mrrs[i], b, PCLPP); // load all vars into their registers
     }
+    now = PCLPP->tokenizer.tokens.data[PCLPP->tokenizer.tokens.iteration-1];
     while (now != "}")
     {
         PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
         IndexHolder& ih = Get(mr.index, holders);
+        now = PCLPP->tokenizer.tokens.Advance();
         if (now == "=")
         {
             now = PCLPP->tokenizer.tokens.Advance();
@@ -145,16 +161,18 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         else if (now == "exchange") // exchange addresses of 2 References (i hope)
         {
-            PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
-            IndexHolder& ih = Get(mr.index, holders);
             now = PCLPP->tokenizer.tokens.Advance();
             PCLPP_MemoryReference& mr2 = PCLPP->GetReference(now);
             IndexHolder& ih2 = Get(mr2.index, holders);
 
             uint16_t a = mr.index;
             uint16_t b = mr2.index;
+            uint8_t partofthisa = mr.partofthis;
+            uint8_t partofthisb = mr2.partofthis;
             mr.index = b;
+            mr.partofthis = partofthisb;
             mr2.index = a;
+            mr2.partofthis = partofthisa;
         }
         else if (now == "+")
         {

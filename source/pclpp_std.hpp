@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 #include <stack>
+#include <queue>
+#include <algorithm>
 #include <iostream>
 #include "libdivide.h" // https://github.com/ridiculousfish/libdivide/blob/master/libdivide.h
 
@@ -11,10 +13,10 @@
 class pclpp_varpool
 {
 public:
-    pclpp_varpool(uint16_t capacity)
+    pclpp_varpool(uint16_t capacity = 65535)
         : data(capacity), used(capacity, false)
     {
-        for (int i = capacity - 1; i >= 0; i--)
+        for (int i = 0; i < capacity; i++)
         {
             freeList.push(i);
         }
@@ -25,13 +27,27 @@ public:
         if (freeList.empty())
             return -1;
 
-        uint16_t index = freeList.top();
+        uint16_t index = freeList.front();
         freeList.pop();
 
         data[index] = value;
         used[index] = true;
 
         return index;
+    }
+
+    void allocateAt(uint16_t index, uint32_t value)
+    {
+        if (used[index])
+        {
+            data[index] = value;
+            return;
+        }
+
+        used[index] = true;
+        data[index] = value;
+
+        return;
     }
 
     void free(uint16_t index)
@@ -43,10 +59,24 @@ public:
         freeList.push(index);
     }
 
-    uint32_t& operator[](uint16_t index)
+    void clear()
+    {
+        while (!freeList.empty()) {
+            freeList.pop();
+        }
+
+        std::fill(used.begin(), used.end(), false);
+
+        for (int i = static_cast<int>(data.size()) - 1; i >= 0; i--)
+        {
+            freeList.push(static_cast<uint16_t>(i));
+        }
+    }
+
+    uint32_t operator[](uint16_t index)
     {
         if (!used[index])
-            return;
+            return 65535;
 
         return data[index];
     }
@@ -54,7 +84,7 @@ public:
 private:
     std::vector<uint32_t> data;
     std::vector<bool> used;
-    std::stack<uint16_t> freeList;
+    std::queue<uint16_t> freeList;
 };
 
 class pclpp_std
@@ -71,23 +101,36 @@ public:
     }
 
     static inline pclpp_varpool localvariablemanager{65535};
+    static inline uint16_t thisOffset = 0;
 
-    static uint16_t AllocateLocal(uint32_t value)
+    static void SetThisOffset(uint16_t of)
     {
-        uint16_t index = localvariablemanager.allocate(value);
+        thisOffset = of;
+    }
+
+    static uint16_t GetThisOffset()
+    {
+        return thisOffset;
+    }
+
+    static uint16_t AllocateLocal(uint32_t value, uint16_t index)
+    {
+        localvariablemanager.allocateAt(index, value);
         #ifdef pclpp_std_debug
-        std::cout << "Allocate Local: " << std::to_string(value) << std::endl;
-        std::cout << "Local Index: " << std::to_string(index) << std::endl;
+        std::cout << "Allocate Local: " << std::to_string(index) << std::endl;
+        std::cout << "Value: " << std::to_string(value) << std::endl;
         #endif
         return index;
     }
 
-    static uint32_t GetLocal(uint16_t index)
+    static uint32_t GetLocal(uint16_t index, uint8_t useOffset)
     {
         #ifdef pclpp_std_debug
         std::cout << "Getting Local: " << std::to_string(index) << std::endl;
         std::cout << "Local Value: " << std::to_string(localvariablemanager[index]) << std::endl;
         #endif
+        if (useOffset == 1)
+            return localvariablemanager[index+thisOffset];
         return localvariablemanager[index];
     }
 
@@ -125,6 +168,10 @@ public:
     {
         uint32_t* mem = (uint32_t*)address;
         *mem = value;
+        #ifdef pclpp_std_debug
+        std::cout << "Writing to address " << std::to_string(address) << std::endl;
+        std::cout << "Value: " << std::to_string(value) << std::endl;
+        #endif
     }
 
     static uint8_t Read8(uint32_t address)
