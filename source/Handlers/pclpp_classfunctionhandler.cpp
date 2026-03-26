@@ -121,8 +121,14 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             continue;
         }
         arg.index = PCLPP->localVarCount;
-        PCLPP->NewLocalWithValue(b, arg.size, argIndex);
         now = PCLPP->tokenizer.tokens.Advance();
+        if (now == "*")
+        {
+            PCLPP->DuplicateVariable(arg, argIndex, c, b);
+            now = PCLPP->tokenizer.tokens.Advance();
+            continue;
+        }
+        PCLPP->NewLocalWithValue(b, arg.size, argIndex);
     }
 
     PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();

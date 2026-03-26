@@ -372,6 +372,15 @@ public:
         }
     }
 
+    void DuplicateVariable(PCLPP_MemoryReference& mr, uint8_t regwithvalue, PCLPP_Class& c, PCLPP_Block& b)
+    {
+        if (c.isByteClass)
+        {
+            b.assembly.MOVRR(0, regwithvalue);
+            NewLocal(b);
+        }
+    }
+
     PCLPP_Library_Link& GetAddress(std::string name, std::string name_space = "")
     {
         for (PCLPP_Library& l : libraries)
