@@ -120,7 +120,6 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             argIndex++;
             continue;
         }
-        b.assembly.PUSHUNSAFE();
         std::string className = now;
         std::string varName = PCLPP->tokenizer.tokens.Advance();
         PCLPP_Class& c = PCLPP->GetClass(className);
@@ -132,6 +131,5 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         b.myLocals.push_back(PCLPP->localVarCount);
         PCLPP->NewLocalWithValue(b, arg.size, argIndex);
         now = PCLPP->tokenizer.tokens.Advance();
-        b.assembly.POPUNSAFE();
     }
 }
