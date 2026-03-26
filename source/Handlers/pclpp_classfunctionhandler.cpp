@@ -111,7 +111,6 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         arg.size = c.byteSize;
         arg.type = c.name;
         arg.index = PCLPP->localVarCount;
-        b.myLocals.push_back(PCLPP->localVarCount);
         PCLPP->NewLocalWithValue(b, arg.size, argIndex);
         now = PCLPP->tokenizer.tokens.Advance();
     }
