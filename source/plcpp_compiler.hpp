@@ -502,12 +502,12 @@ public:
         localVarCount++;
     }
 
-    void NewLocalWithValue(PCLPP_Block& b, uint8_t size)
+    void NewLocalWithValue(PCLPP_Block& b, uint8_t size, uint8_t inReg = 0)
     {
         b.assembly.PUSH(1 << 1);
         b.assembly.PUSH(1 << 0);
 
-        b.assembly.MOVRR(1, 0);
+        b.assembly.MOVRR(1, inReg);
         b.assembly.MOVRImm(0, size);
         b.assembly.PUSH(1 << 1);
         b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);

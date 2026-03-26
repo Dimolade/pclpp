@@ -107,4 +107,30 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     {
         b.assembly.MOVRImm(0, -1);
     }
+
+    // load arguments
+    PCLPP->tokenizer.tokens.Advance(); // skip (
+    uint8_t argIndex = 0;
+    std::string now = PCLPP->tokenizer.tokens.Advance();
+    while (now != ")")
+    {
+        if (now == ",")
+        {
+            now = PCLPP->tokenizer.tokens.Advance();
+            argIndex++;
+            continue;
+        }
+        b.assembly.PUSHUNSAFE();
+        std::string className = now;
+        std::string varName = PCLPP->tokenizer.tokens.Advance();
+        PCLPP_Class& c = PCLPP->GetClass(className);
+        PCLPP_MemoryReference& arg = b.memoryReferences.emplace_back();
+        arg.name = varName;
+        arg.partofthis = 0;
+        arg.size = c.byteSize;
+        b.myLocals.push_back(PCLPP->localVarCount);
+        PCLPP->NewLocalWithValue(b, arg.size, argIndex);
+        now = PCLPP->tokenizer.tokens.Advance();
+        b.assembly.POPUNSAFE();
+    }
 }

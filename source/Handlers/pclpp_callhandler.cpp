@@ -45,7 +45,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     collection.clear();
 
-    int argIndex = 0;
+    uint8_t argIndex = 0;
     std::string now = PCLPP->tokenizer.tokens.Advance();
     PCLPP->blocks.back().assembly.PUSH(1 << 0);
     while (now != ")")

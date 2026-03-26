@@ -123,6 +123,16 @@ public:
         emit32(0x04E09DE4, true);
     }
 
+    inline void PUSHUNSAFE()
+    {
+        emit32(0x3F002DE9, true);
+    }
+
+    inline void POPUNSAFE()
+    {
+        emit32(0x3F00BDE8, true);
+    }
+
     inline void PUSH(uint32_t regMask)
     {
         emit32(0xE92D0000 | regMask);
