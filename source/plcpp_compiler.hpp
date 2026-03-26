@@ -192,7 +192,7 @@ public:
     std::vector<PCLPP_Variable> variables;
     std::vector<PCLPP_Class_Function> functions;
     bool isByteClass = false;
-    uint8_t byteSize = 0;
+    uint8_t byteSize = 4;
     std::string name;
 };
 

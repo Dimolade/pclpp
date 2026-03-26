@@ -1,7 +1,7 @@
 #include "pclpp_classfunctionhandler.h"
 #include "../plcpp_compiler.hpp"
 
-void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_MemoryReference* parent = nullptr)
+void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, uint8_t isThis = 1, PCLPP_MemoryReference* parent = nullptr)
 {
     for (PCLPP_Variable& v : c.variables)
     {
@@ -21,8 +21,8 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
             b.classvarcount++;
             child->size = 4;
             child->type = newc.name;
-            child->partofthis = 1;
-            LoadClassRecursive(PCLPP,newc, b, child);
+            child->partofthis = isThis;
+            LoadClassRecursive(PCLPP,newc, b, isThis, child);
             continue;
         }
         else
@@ -40,9 +40,14 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
             b.classvarcount++;
             child->size = newc.byteSize;
             child->type = newc.name;
-            child->partofthis = 1;
+            child->partofthis = isThis;
         }
     }
+}
+
+void SyncClass(PCLPP_MemoryReference& mr, uint8_t& reg, PCLPP_Class& c)
+{
+
 }
 
 void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
@@ -110,6 +115,11 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         arg.partofthis = 0;
         arg.size = c.byteSize;
         arg.type = c.name;
+        if (c.isByteClass == false)
+        {
+            SyncClass(arg, argIndex, c);
+            continue;
+        }
         arg.index = PCLPP->localVarCount;
         PCLPP->NewLocalWithValue(b, arg.size, argIndex);
         now = PCLPP->tokenizer.tokens.Advance();
@@ -122,7 +132,7 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     mr.type = c.name;
     mr.partofthis = 1;
     b.classvarcount++;
-    LoadClassRecursive(PCLPP, c, b, &mr);
+    LoadClassRecursive(PCLPP, c, b, 1, &mr);
     b.type = PCLPP_Block_Type::Function;
     if (!inl)
     {
