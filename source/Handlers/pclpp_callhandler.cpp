@@ -65,7 +65,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         else
         {
             PCLPP_MemoryReference& mr = PCLPP->GetReference(now);
-            PCLPP->blocks.back().assembly.PUSH(1 << 0);
+            PCLPP->blocks.back().assembly.PUSHUNSAFE();
             PCLPP->blocks.back().assembly.MOVRImm(0, mr.index);
             PCLPP->blocks.back().assembly.MOVRImm(1, mr.partofthis);
             PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
@@ -76,7 +76,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
                 PCLPP->tokenizer.tokens.iteration--;
             }
             PCLPP->blocks.back().assembly.MOVRR(argIndex, 0);
-            PCLPP->blocks.back().assembly.POP(1 << 0);
+            PCLPP->blocks.back().assembly.POPUNSAFE();
             now = PCLPP->tokenizer.tokens.Advance();
             continue;
         }
