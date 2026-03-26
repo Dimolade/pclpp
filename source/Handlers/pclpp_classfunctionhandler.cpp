@@ -89,24 +89,6 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     b.noffset = noffset;
     b.noclean = noclean;
     b.nodefault = nodefault;
-    PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();
-    mr.name = "this";
-    mr.size = 4;
-    mr.index = 0;
-    mr.type = c.name;
-    mr.partofthis = 1;
-    b.classvarcount++;
-    LoadClassRecursive(PCLPP, c, b, &mr);
-    b.type = PCLPP_Block_Type::Function;
-    if (!inl)
-    {
-        PCLPP->blocks.back().assembly.MOVRR(11, 14);
-        PCLPP->blocks.back().assembly.PUSH(1 << 11);
-    }
-    if (!nodefault)
-    {
-        b.assembly.MOVRImm(0, -1);
-    }
 
     // load arguments
     PCLPP->tokenizer.tokens.Advance(); // skip (
@@ -131,5 +113,24 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         b.myLocals.push_back(PCLPP->localVarCount);
         PCLPP->NewLocalWithValue(b, arg.size, argIndex);
         now = PCLPP->tokenizer.tokens.Advance();
+    }
+
+    PCLPP_MemoryReference& mr = b.memoryReferences.emplace_back();
+    mr.name = "this";
+    mr.size = 4;
+    mr.index = 0;
+    mr.type = c.name;
+    mr.partofthis = 1;
+    b.classvarcount++;
+    LoadClassRecursive(PCLPP, c, b, &mr);
+    b.type = PCLPP_Block_Type::Function;
+    if (!inl)
+    {
+        PCLPP->blocks.back().assembly.MOVRR(11, 14);
+        PCLPP->blocks.back().assembly.PUSH(1 << 11);
+    }
+    if (!nodefault)
+    {
+        b.assembly.MOVRImm(0, -1);
     }
 }
