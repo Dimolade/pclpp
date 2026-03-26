@@ -29,13 +29,21 @@ class PBC {
   int4 test = 12;
 }
 
+function inline PBC.Function()
+{
+  new int4 test;
+  edit (test, this.test)
+  {
+    test = 3;
+    test += this.test;
+  }
+  returnset test;
+}
+
 main {
   new PBC pbc;
-  edit (pbc.test)
-  {
-    pbc.test += 3;
-  }
-  returnset pbc.test;
+  call output pbc.Function();
+  returnset output;
 }
 ```
 > The above code returns 15.
