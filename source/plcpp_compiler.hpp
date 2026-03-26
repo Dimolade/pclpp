@@ -152,6 +152,7 @@ public:
     std::string name;
     std::string type = "";
     uint8_t partofthis = 0;
+    bool free = true;
     std::vector<PCLPP_MemoryReference> children;
 };
 
@@ -476,6 +477,7 @@ public:
     {
         for (PCLPP_MemoryReference& mrr : mr)
         {
+            if (!mrr.free) continue;
             bool found = false;
             for (uint16_t index : b.myLocals)
             {

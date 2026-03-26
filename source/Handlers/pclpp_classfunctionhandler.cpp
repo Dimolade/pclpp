@@ -124,6 +124,7 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         now = PCLPP->tokenizer.tokens.Advance();
         if (now == "*")
         {
+            arg.free = false;
             PCLPP->DuplicateVariable(arg, argIndex, c, b);
             now = PCLPP->tokenizer.tokens.Advance();
             continue;
