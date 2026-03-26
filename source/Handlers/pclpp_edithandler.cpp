@@ -131,6 +131,7 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     }
     PCLPP->tokenizer.tokens.Advance(); // skip ")"
     PCLPP->tokenizer.tokens.Advance(); // skip "{"
+    holders.reserve(mrrs.size());
     for (int i = 0; i < mrrs.size(); i++)
     {
         IndexHolder& ih = holders.emplace_back();
