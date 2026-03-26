@@ -341,10 +341,12 @@ public:
                 {
                     b.assembly.CallFunction((uint32_t)pclpp_std::GetThisOffset);
                     b.assembly.PUSH(1 << 0);
+                    b.assembly.PUSH(1 << 0);
                     b.assembly.MOVRImm(0, mr.index); // class start index, aka the address
                     to = currentThisOffset;
                     currentThisOffset = mr.index;
                     b.assembly.CallFunction((uint32_t)pclpp_std::SetThisOffset);
+                    b.assembly.POP(1 << 0);
                 }
                 if (func->inl)
                 {
