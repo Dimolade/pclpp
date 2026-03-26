@@ -136,8 +136,8 @@ void PCLPP_EditHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     {
         IndexHolder& ih = holders.emplace_back();
         ih.index = mrrs[i].index;
-        ih.reg = i;
-        LoadVar(i, mrrs[i], b, PCLPP); // load all vars into their registers
+        ih.reg = i+5;
+        LoadVar(i+5, mrrs[i], b, PCLPP); // load all vars into their registers
     }
     now = PCLPP->tokenizer.tokens.data[PCLPP->tokenizer.tokens.iteration-1];
     while (now != "}")
