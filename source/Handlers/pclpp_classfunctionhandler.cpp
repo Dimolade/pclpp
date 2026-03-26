@@ -110,7 +110,7 @@ void PCLPP_ClassFunctionHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     // load arguments
     PCLPP->tokenizer.tokens.Advance(); // skip (
-    uint8_t argIndex = 0;
+    uint8_t argIndex = 5;
     std::string now = PCLPP->tokenizer.tokens.Advance();
     while (now != ")")
     {

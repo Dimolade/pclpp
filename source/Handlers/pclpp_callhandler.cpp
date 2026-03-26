@@ -45,7 +45,13 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     collection.clear();
 
-    uint8_t argIndex = 0;
+    uint8_t size = 4;
+    if (isFunc == false)
+    {
+        isFunc = PCLPP->AddressIsClass(funcName, namespaceName);
+    }
+
+    uint8_t argIndex = isFunc ? 5 : 0;
     std::string now = PCLPP->tokenizer.tokens.Advance();
     PCLPP->blocks.back().assembly.PUSH(1 << 0);
     while (now != ")")
@@ -82,11 +88,6 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
     }
 
-    uint8_t size = 4;
-    if (isFunc == false)
-    {
-        isFunc = PCLPP->AddressIsClass(funcName, namespaceName);
-    }
     if (!isFunc)
     {
         PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
