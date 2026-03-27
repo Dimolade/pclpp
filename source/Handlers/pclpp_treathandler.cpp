@@ -40,6 +40,18 @@ void TreatWith(PCLPP_MemoryReference& mr, PCLPP* PCLPP)
             mr.free = false;
         }
     }
+    else if (nextOp == "pointer")
+    {
+        std::string after = PCLPP->tokenizer.tokens.Advance();
+        if (after == "true")
+        {
+            mr.doublefree = true;
+        }
+        else if (after == "false")
+        {
+            mr.doublefree = false;
+        }
+    }
     else if (nextOp == "offset")
     {
         std::string after = PCLPP->tokenizer.tokens.Advance();
