@@ -12,7 +12,7 @@ void TreatAs(PCLPP_MemoryReference& mr, PCLPP* PCLPP)
     if (c.isByteClass)
     {
         mr.type = c.name;
-        mr.size = c.byteSize
+        mr.size = c.byteSize;
     }
 }
 
