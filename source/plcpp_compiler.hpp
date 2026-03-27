@@ -154,6 +154,7 @@ public:
     std::string type = "";
     uint8_t partofthis = 0;
     bool free = true;
+    bool doublefree = false;
     std::vector<PCLPP_MemoryReference> children;
 };
 
@@ -498,6 +499,7 @@ public:
             blocks.back().assembly.MOVRImm(0, mrr.index);
             blocks.back().assembly.MOVRImm(1, mrr.partofthis);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
+            if (mrr.doublefree)
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
             UnallocateMR(b, mrr.children);
         }

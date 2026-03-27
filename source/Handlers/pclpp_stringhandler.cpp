@@ -50,6 +50,8 @@ void PCLPP_StringHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     std::string string = PCLPP->tokenizer.tokens.Advance();
 
+    mr.doublefree = true;
+
     CreateString(mr, string, PCLPP);
 
     PCLPP->tokenizer.tokens.Advance(); // skip ;
