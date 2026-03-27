@@ -500,6 +500,12 @@ public:
             blocks.back().assembly.MOVRImm(1, mrr.partofthis);
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
             if (mrr.doublefree)
+            {
+                blocks.back().assembly.PUSH(1 << 0); // push address
+                blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read32);
+                blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
+                blocks.back().assembly.POP(1 << 0);
+            }
             blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
             UnallocateMR(b, mrr.children);
         }
