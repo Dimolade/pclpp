@@ -23,12 +23,11 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
         b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
         b.assembly.POP(1 << 0);
         b.assembly.ADDRImm(0, 1); // add address
-        std::cout << "Inserting " << string[i] << " at " << std::to_string(i) << std::endl;
     }
-    std::cout << "Inserting Null Terminator" << " at " << std::to_string(i) << std::endl;
     b.assembly.MOVRImm(1, '\0');
     b.assembly.CallFunction((uint32_t)pclpp_std::Write8); // add null terminator
     // allocate 4 bytes for address (address to address)
+    b.assembly.MOVRImm(0, 4); // size
     b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);
     b.assembly.PUSH(1 << 0);
     b.assembly.POP(1 << 6);
