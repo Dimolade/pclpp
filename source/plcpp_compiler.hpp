@@ -241,7 +241,7 @@ public:
     uint32_t codepageamount = 0;
     uint16_t currentThisOffset = 0;
 
-    void AddLibrary(PCLPP_Library& l)
+    void AddLibrary(PCLPP_Library l)
     {
         libraries.push_back(l);
     }
