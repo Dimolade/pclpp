@@ -29,9 +29,9 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     // allocate 4 bytes for address (address to address)
     b.assembly.MOVRImm(0, 4); // size
     b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);
-    b.assembly.PUSH(1 << 0);
+    b.assembly.PUSH(1 << 0); // r0: address to address
     b.assembly.POP(1 << 6);
-    b.assembly.MOVRR(1, 6);
+    b.assembly.MOVRR(1, 6); // r1: address
     b.assembly.CallFunction((uint32_t)pclpp_std::Write32); // set address
     b.assembly.POP(1 << 0); // r0: address of address
     b.assembly.MOVRImm(1, mr.index);
