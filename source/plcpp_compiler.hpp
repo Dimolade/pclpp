@@ -218,6 +218,7 @@ public:
     }
     void Link(std::string name, std::string name_space, uint32_t address, uint8_t size = 4)
     {
+        links.reserve(links.size()+1);
         PCLPP_Library_Link& l = links.emplace_back();
         l.name = name;
         l.name_space = name_space;
