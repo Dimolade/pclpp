@@ -97,7 +97,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             }
             PCLPP->blocks.back().assembly.MOVRR(11, 0);
             PCLPP->blocks.back().assembly.POPEVERYTHING();
-            PCLPP->blocks.back().assembly.MOVRR(argIndex, 0);
+            PCLPP->blocks.back().assembly.MOVRR(argIndex, 11);
             now = PCLPP->tokenizer.tokens.Advance();
             continue;
         }
