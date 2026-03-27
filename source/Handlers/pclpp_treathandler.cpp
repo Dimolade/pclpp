@@ -1,8 +1,6 @@
-#include "pclpp_mainhandler.h"
+#include "pclpp_treathandler.h"
 #include "../assemblinizer_jit.h"
 #include "../plcpp_compiler.hpp"
-
-#define mainhandler_debug
 
 void TreatAs(PCLPP_MemoryReference& mr, PCLPP* PCLPP)
 {
