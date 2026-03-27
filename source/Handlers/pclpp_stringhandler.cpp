@@ -39,8 +39,6 @@ void PCLPP_StringHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     std::string string = PCLPP->tokenizer.tokens.Advance();
 
-    std::cout << "Creating String " << string << std::endl;
-
     CreateString(mr, string, PCLPP);
 
     PCLPP->tokenizer.tokens.Advance(); // skip ;
