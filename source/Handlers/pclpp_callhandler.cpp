@@ -90,7 +90,7 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
             PCLPP->blocks.back().assembly.MOVRImm(0, mr.index);
             PCLPP->blocks.back().assembly.MOVRImm(1, mr.partofthis);
             PCLPP->blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-            if (next == ",")
+            if (next != "*")
             {
                 PCLPP->ReadASM(mr.size, PCLPP->blocks.back());
                 PCLPP->tokenizer.tokens.iteration--;
