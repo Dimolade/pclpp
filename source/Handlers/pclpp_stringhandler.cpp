@@ -8,27 +8,37 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     b.assembly.MOVRImm(0, mr.index);
     b.assembly.MOVRImm(1, mr.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-    //b.assembly.CallFunction((uint32_t)pclpp_std::Free); // free the address of variable
+    b.assembly.CallFunction((uint32_t)pclpp_std::Free); // free the address of variable
     b.assembly.MOVRImm(0, string.length()+1); // +1 for null terminator
     b.assembly.MOVRImm(1, 1); // (sizeof char)
     b.assembly.CallFunction((uint32_t)pclpp_std::Calloc); // r0: address
     b.assembly.MOVRR(6,0);
     b.assembly.PUSH(1 << 6);
     // Create Characters
-    for (int i = 0; i < string.length(); i++)
+    int i = 0;
+    for (i = 0; i < string.length(); i++)
     {
         b.assembly.MOVRImm(1, (uint8_t)string[i]); // mov char
         b.assembly.PUSH(1 << 0);
         b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
         b.assembly.POP(1 << 0);
         b.assembly.ADDRImm(0, 1); // add address
+        std::cout << "Inserting " << string[i] << " at " << std::to_string(i) << std::endl;
     }
+    std::cout << "Inserting Null Terminator" << " at " << std::to_string(i) << std::endl;
     b.assembly.MOVRImm(1, '\0');
     b.assembly.CallFunction((uint32_t)pclpp_std::Write8); // add null terminator
+    // allocate 4 bytes for address (address to address)
+    b.assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+    b.assembly.PUSH(1 << 0);
     b.assembly.POP(1 << 6);
-    b.assembly.MOVRR(0, 6);
+    b.assembly.MOVRR(1, 6);
+    b.assembly.CallFunction((uint32_t)pclpp_std::Write32); // set address
+    b.assembly.POP(1 << 0); // r0: address of address
     b.assembly.MOVRImm(1, mr.index);
     b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
+
+    mr.size = 4; // is now a byte 4
 }
 
 void PCLPP_StringHandler::OnToken(PCLPP* PCLPP, const std::string& token)
