@@ -106,7 +106,9 @@ void PCLPP_CallHandler::OnToken(PCLPP* PCLPP, const std::string& token)
     if (!isFunc)
     {
         PCLPP_Library_Link& add = PCLPP->GetAddress(funcName, namespaceName);
+        PCLPP->blocks.back().assembly.PUSH(1 << 11);
         PCLPP->blocks.back().assembly.CallFunction(add.address);
+        PCLPP->blocks.back().assembly.POP(1 << 11);
         size = add.size;
     }
     else
