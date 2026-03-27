@@ -12,7 +12,8 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     b.assembly.MOVRImm(0, string.length()+1); // +1 for null terminator
     b.assembly.MOVRImm(1, 1); // (sizeof char)
     b.assembly.CallFunction((uint32_t)pclpp_std::Calloc); // r0: address
-    b.assembly.PUSH(1 << 0);
+    b.assembly.MOVRR(6,0);
+    b.assembly.PUSH(1 << 6);
     // Create Characters
     for (int i = 0; i < string.length(); i++)
     {
@@ -24,7 +25,8 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     }
     b.assembly.MOVRImm(1, '\0');
     b.assembly.CallFunction((uint32_t)pclpp_std::Write8); // add null terminator
-    b.assembly.POP(1 << 0);
+    b.assembly.POP(1 << 6);
+    b.assembly.MOVRR(0, 6);
     b.assembly.MOVRImm(1, mr.index);
     b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
 }
