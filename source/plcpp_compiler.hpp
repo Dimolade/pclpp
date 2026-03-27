@@ -477,7 +477,13 @@ public:
     {
         for (PCLPP_MemoryReference& mrr : mr)
         {
-            if (!mrr.free) continue;
+            if (mrr.free == false)
+            {
+                #ifdef pclpp_debug
+                std::cout << "Not Freeing " << mrr.name << std::endl;
+                #endif
+                continue;
+            }
             bool found = false;
             for (uint16_t index : b.myLocals)
             {
