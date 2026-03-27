@@ -8,8 +8,23 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     b.assembly.MOVRImm(0, mr.index);
     b.assembly.MOVRImm(1, mr.partofthis);
     b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-    b.assembly.CallFunction((uint32_t)pclpp_std::Free); // free variable
-    b.assembly.MOVRImm(0, 0);
+    b.assembly.CallFunction((uint32_t)pclpp_std::Free); // free the address of variable
+    b.assembly.MOVRImm(0, string.length()+1); // +1 for null terminator
+    b.assembly.MOVRImm(1, 1); // (sizeof char)
+    b.assembly.CallFunction((uint32_t)pclpp_std::Calloc); // r0: address
+    b.assembly.PUSH(1 << 0);
+    // Create Characters
+    for (int i = 0; i < string.length(); i++)
+    {
+        b.assembly.MOVRImm(1, (uint8_t)string[i]); // mov char
+        b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
+        b.assembly.ADDRImm(0, 1); // add address
+    }
+    b.assembly.MOVRImm(1, (uint8_t)string[i])
+
+    b.assembly.POP(1 << 0);
+    b.assembly.MOVRImm(1, mr.index);
+    b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
 }
 
 void PCLPP_StringHandler::OnToken(PCLPP* PCLPP, const std::string& token)
@@ -24,7 +39,7 @@ void PCLPP_StringHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 
     std::cout << "Creating String " << string << std::endl;
 
-    //CreateString(mr, string, PCLPP):
+    CreateString(mr, string, PCLPP):
 
     PCLPP->tokenizer.tokens.Advance(); // skip ;
 }
