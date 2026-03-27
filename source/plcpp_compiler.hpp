@@ -3,6 +3,7 @@
 #include "assemblinizer_jit.h"
 #include "Handlers/pclpp_tokenhandlers.hpp"
 #include <string>
+//#define pclpp_debug
 
 class PCLPP_DataCont
 {
@@ -477,6 +478,9 @@ public:
     {
         for (PCLPP_MemoryReference& mrr : mr)
         {
+            #ifdef pclpp_debug
+            std::cout << "About to free " << mrr.name << " : free? " << (mrr.free ? "yes" : "dont") << std::endl;
+            #endif
             if (mrr.free == false)
             {
                 #ifdef pclpp_debug
