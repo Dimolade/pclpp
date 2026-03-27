@@ -116,6 +116,7 @@ public:
     static uint16_t AllocateLocal(uint32_t value, uint16_t index)
     {
         localvariablemanager.allocateAt(index, value);
+        std::cout << "Allocate Local: " << std::to_string(index) << " : " << std::to_string(value) << std::endl;
         #ifdef pclpp_std_debug
         std::cout << "Allocate Local: " << std::to_string(index) << " : " << std::to_string(value) << std::endl;
         #endif
@@ -167,6 +168,8 @@ public:
     {
         uint32_t* mem = (uint32_t*)address;
         *mem = value;
+        std::cout << "Writing to address " << std::to_string(address) << std::endl;
+        std::cout << "Value: " << std::to_string(value) << std::endl;
         #ifdef pclpp_std_debug
         std::cout << "Writing to address " << std::to_string(address) << std::endl;
         std::cout << "Value: " << std::to_string(value) << std::endl;
