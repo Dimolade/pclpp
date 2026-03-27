@@ -56,7 +56,7 @@ void TreatWith(PCLPP_MemoryReference& mr, PCLPP* PCLPP)
     }
 }
 
-void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
+void PCLPP_TreatHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (token != "treat") return;
     if (PCLPP->inBlock == false) return;
