@@ -17,11 +17,13 @@ void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
     for (int i = 0; i < string.length(); i++)
     {
         b.assembly.MOVRImm(1, (uint8_t)string[i]); // mov char
+        b.assembly.PUSH(1 << 0);
         b.assembly.CallFunction((uint32_t)pclpp_std::Write8);
+        b.assembly.POP(1 << 0);
         b.assembly.ADDRImm(0, 1); // add address
     }
-    b.assembly.MOVRImm(1, (uint8_t)string[i])
-
+    b.assembly.MOVRImm(1, '\0');
+    b.assembly.CallFunction((uint32_t)pclpp_std::Write8); // add null terminator
     b.assembly.POP(1 << 0);
     b.assembly.MOVRImm(1, mr.index);
     b.assembly.CallFunction((uint32_t)pclpp_std::AllocateLocal);
