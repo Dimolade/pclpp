@@ -36,26 +36,43 @@ public:
 #ifdef kynex_CTRL
     CTRLCodeRegion codeRegion = nullptr;
     u8* codeBlockData = nullptr;
-    inline void allocStartAddress()
+    inline bool allocStartAddress()
     {
         codeBlockData = ctrlAllocCodeBlock(&codeRegion, code.size());
+        if (codeBlockData)
+        {
+            return true;
+        }
+        return false;
     }
 
-    inline void allocStartAddress_AfterCommit(int index = 0)
+    inline bool allocStartAddress_AfterCommit(int index = 0)
     {
         startAddress = ctrlGetCodeBlock(codeRegion, index);
+        if (startAddress)
+        {
+            return true;
+        }
+        return false;
     }
 
-    inline void commitCodeRegion()
+    inline bool commitCodeRegion()
     {
-        ctrlCommitCodeRegion(&codeRegion);
+        Result res = ctrlCommitCodeRegion(&codeRegion);
+        if (R_FAILED(res))
+        {
+            return false;
+        }
+        return true;
     }
 
-    inline void setupInstructions()
+    inline bool setupInstructions()
     {
         if (codeBlockData) {
             memcpy(codeBlockData, code.data(), code.size());
+            return true;
         }
+        return false;
     }
 
     inline void unalloc()

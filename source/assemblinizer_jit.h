@@ -7,25 +7,22 @@ typedef int(*Fn_t)(uint32_t);
 
 struct Assemblinizer
 {
-    inline static Fn_t Get(Assembly& ASM, uint32_t index = 0)
+    inline static bool Load(Assembly& ASM, uint32_t index = 0)
     {
         if (ASM.startAddress == 0)
         {
-            ASM.allocStartAddress();
-            ASM.setupInstructions();
-            ASM.commitCodeRegion();
-            ASM.allocStartAddress_AfterCommit(index);
+            if (!ASM.allocStartAddress()) return false;
+            if (!ASM.setupInstructions()) return false;
+            if (!ASM.commitCodeRegion()) return false;
+            if (!ASM.allocStartAddress_AfterCommit(index)) return false;
         }
-        return (Fn_t)ASM.startAddress;
+        return true;
     }
     inline static int Run(Assembly& ASM, uint32_t index = 0, uint32_t input = 0)
     {
         if (ASM.startAddress == 0)
         {
-            ASM.allocStartAddress();
-            ASM.setupInstructions();
-            ASM.commitCodeRegion();
-            ASM.allocStartAddress_AfterCommit(index);
+            return -1;
         }
         Fn_t t = (Fn_t)ASM.startAddress;
         int out = t(input);
