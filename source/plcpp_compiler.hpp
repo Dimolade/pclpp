@@ -163,7 +163,7 @@ class PCLPP_Block
 public:
     PCLPP_Block_Type type = PCLPP_Block_Type::Function;
     std::vector<PCLPP_MemoryReference> memoryReferences;
-    Assembly assembly;
+    PCLPP_Assembly assembly;
     uint16_t classvarcount = 0;
     std::vector<uint16_t> myLocals;
     bool inl = false;
@@ -270,7 +270,7 @@ public:
         return 0;
     }
 
-    Assembly& GetMainAssembly()
+    PCLPP_Assembly& GetMainAssembly()
     {
         for (PCLPP_Block& b : blocks)
         {
@@ -445,7 +445,7 @@ public:
         return *cand;
     }
 
-    void LoadString(std::string string, Assembly& assembly) // loads string into r0
+    void LoadString(std::string string, PCLPP_Assembly& assembly) // loads string into r0
     {
         assembly.MOVRImm(0, string.length());
         assembly.MOVRImm(1, 1);
@@ -587,7 +587,7 @@ public:
         }
     }
 
-    void LoadByteClass(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
+    void LoadByteClass(PCLPP_Class& c, PCLPP_Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
     {
         if (!c.isByteClass) return;
         assembly.MOVRImm(0, c.byteSize);
@@ -616,7 +616,7 @@ public:
         assembly.MOVRR(0,10);
     }
 
-    void LoadClassAsAddress(PCLPP_Class& c, Assembly& assembly, PCLPP_Block& b)
+    void LoadClassAsAddress(PCLPP_Class& c, PCLPP_Assembly& assembly, PCLPP_Block& b)
     {
         if (c.isByteClass) return;
         assembly.MOVRImm(0, 4); // address size is 32 bits (4 bytes)

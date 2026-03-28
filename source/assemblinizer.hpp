@@ -23,7 +23,7 @@
 
 #define assemblinizer_littleEndian
 
-class Assembly
+class PCLPP_Assembly
 {
 public:
     std::vector<uint8_t> code;
