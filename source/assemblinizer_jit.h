@@ -20,10 +20,22 @@ struct PCLPP_Assembly_Runner
     {
         if (ASM.startAddress == 0)
         {
-            if (!ASM.allocStartAddress()) return false;
-            if (!ASM.setupInstructions()) return false;
-            if (!ASM.commitCodeRegion()) return false;
-            if (!ASM.allocStartAddress_AfterCommit(index)) return false;
+            if (!ASM.allocStartAddress())
+            {
+                return PCLPP_Assembly_Runner_Result(false, "Failed allocating code block.");
+            }
+            if (!ASM.setupInstructions())
+            {
+                return PCLPP_Assembly_Runner_Result(false, "Failed copying instructions.");
+            }
+            if (!ASM.commitCodeRegion())
+            {
+                return PCLPP_Assembly_Runner_Result(false, "Failed commiting code region.");
+            }
+            if (!ASM.allocStartAddress_AfterCommit(index))
+            {
+                return PCLPP_Assembly_Runner_Result(false, "Failed retrieving address of function.");
+            }
         }
         return PCLPP_Assembly_Runner_Result(true);
     }
