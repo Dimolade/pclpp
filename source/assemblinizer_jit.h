@@ -5,9 +5,18 @@
 
 typedef int(*Fn_t)(uint32_t);
 
-struct Assemblinizer
+struct PCLPP_Assembly_Runner_Result
 {
-    inline static bool Load(Assembly& ASM, uint32_t index = 0)
+    bool success;
+    std::string failReason;
+
+    PCLPP_Assembly_Runner_Result(bool s, std::string fr = "")
+    success(s), failReason(fr) {}
+};
+
+struct PCLPP_Assembly_Runner
+{
+    inline static PCLPP_Assembly_Runner_Result Load(Assembly& ASM, uint32_t index = 0)
     {
         if (ASM.startAddress == 0)
         {
@@ -16,7 +25,7 @@ struct Assemblinizer
             if (!ASM.commitCodeRegion()) return false;
             if (!ASM.allocStartAddress_AfterCommit(index)) return false;
         }
-        return true;
+        return PCLPP_Assembly_Runner_Result(true);
     }
     inline static int Run(Assembly& ASM, uint32_t index = 0, uint32_t input = 0)
     {
