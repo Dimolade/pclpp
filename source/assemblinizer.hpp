@@ -23,6 +23,15 @@
 
 #define assemblinizer_littleEndian
 
+struct PCLPP_Assembly_Map_Result
+{
+    bool success;
+    uint32_t result = 0;
+
+    PCLPP_Assembly_Map_Result(bool s, uint32_t r = 0) :
+    success(s), result(r) {}
+};
+
 class PCLPP_Assembly
 {
 public:
@@ -56,14 +65,14 @@ public:
         return false;
     }
 
-    inline bool commitCodeRegion()
+    inline PCLPP_Assembly_Map_Result commitCodeRegion()
     {
         Result res = ctrlCommitCodeRegion(&codeRegion);
         if (R_FAILED(res))
         {
-            return false;
+            return PCLPP_Assembly_Map_Result(false, res);
         }
-        return true;
+        return PCLPP_Assembly_Map_Result(true);
     }
 
     inline bool setupInstructions()

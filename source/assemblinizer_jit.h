@@ -28,9 +28,13 @@ struct PCLPP_Assembly_Runner
             {
                 return PCLPP_Assembly_Runner_Result(false, "Failed copying instructions.");
             }
-            if (!ASM.commitCodeRegion())
+            PCLPP_Assembly_Map_Result mr = ASM.commitCodeRegion();
+            if (!mr.success)
             {
-                return PCLPP_Assembly_Runner_Result(false, "Failed commiting code region.");
+                std::stringstream ss;
+                ss << "Failed mapping code region: 0x"
+                << std::setfill('0') << std::setw(8) << std::hex << mr.result;
+                return PCLPP_Assembly_Runner_Result(false, ss.str());
             }
             if (!ASM.allocStartAddress_AfterCommit(index))
             {
