@@ -10,7 +10,7 @@ struct PCLPP_Assembly_Runner_Result
     bool success;
     std::string failReason;
 
-    PCLPP_Assembly_Runner_Result(bool s, std::string fr = "")
+    PCLPP_Assembly_Runner_Result(bool s, std::string fr = "") :
     success(s), failReason(fr) {}
 };
 
