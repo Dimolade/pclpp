@@ -497,19 +497,24 @@ public:
                 if (found) break;
             }
             if (!found) continue;
-            blocks.back().assembly.MOVRImm(0, mrr.index);
-            blocks.back().assembly.MOVRImm(1, mrr.partofthis);
-            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-            if (mrr.doublefree)
-            {
-                blocks.back().assembly.PUSH(1 << 0); // push address
-                blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read32);
-                blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
-                blocks.back().assembly.POP(1 << 0);
-            }
-            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
+            FreeMemoryRef(mrr);
             UnallocateMR(b, mrr.children);
         }
+    }
+
+    void FreeMemoryRef(MemoryReference& mrr)
+    {
+        blocks.back().assembly.MOVRImm(0, mrr.index);
+        blocks.back().assembly.MOVRImm(1, mrr.partofthis);
+        blocks.back().assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
+        if (mrr.doublefree)
+        {
+            blocks.back().assembly.PUSH(1 << 0); // push address
+            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Read32);
+            blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
+            blocks.back().assembly.POP(1 << 0);
+        }
+        blocks.back().assembly.CallFunction((uint32_t)pclpp_std::Free);
     }
 
     void UnallocateBlock(PCLPP_Block& b)

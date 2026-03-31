@@ -103,16 +103,19 @@ public:
     static inline pclpp_varpool localvariablemanager{65535};
     static inline uint16_t thisOffset = 0;
 
+    __attribute__((noinline, aligned(4)))
     static void SetThisOffset(uint16_t of)
     {
         thisOffset = of;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint16_t GetThisOffset()
     {
         return thisOffset;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint16_t AllocateLocal(uint32_t value, uint16_t index)
     {
         localvariablemanager.allocateAt(index, value);
@@ -122,6 +125,7 @@ public:
         return index;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint32_t GetLocal(uint16_t index, uint8_t useOffset)
     {
         #ifdef pclpp_std_debug
@@ -133,6 +137,7 @@ public:
         return localvariablemanager[index];
     }
 
+    __attribute__((noinline, aligned(4)))
     static void UnallocateLocal(uint16_t index)
     {
         #ifdef pclpp_std_debug
@@ -141,28 +146,33 @@ public:
         localvariablemanager.free(index);
     }
 
+    __attribute__((noinline, aligned(4)))
     static void Free(uint32_t address)
     {
         free((int*)address);
     }
 
+    __attribute__((noinline, aligned(4)))
     static void Printf(uint32_t address)
     {
         printf("%s", (char*)address);
     }
 
+    __attribute__((noinline, aligned(4)))
     static void Write8(uint32_t address, uint8_t value)
     {
         uint8_t* mem = (uint8_t*)address;
         *mem = value;
     }
 
+    __attribute__((noinline, aligned(4)))
     static void Write16(uint32_t address, uint16_t value)
     {
         uint16_t* mem = (uint16_t*)address;
         *mem = value;
     }
 
+    __attribute__((noinline, aligned(4)))
     static void Write32(uint32_t address, uint32_t value)
     {
         uint32_t* mem = (uint32_t*)address;
@@ -173,18 +183,21 @@ public:
         #endif
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint8_t Read8(uint32_t address)
     {
         uint8_t* mem = (uint8_t*)address;
         return *mem;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint16_t Read16(uint32_t address)
     {
         uint16_t* mem = (uint16_t*)address;
         return *mem;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint32_t Read32(uint32_t address)
     {
         uint32_t* mem = (uint32_t*)address;
@@ -195,6 +208,7 @@ public:
         return *mem;
     }
 
+    __attribute__((noinline, aligned(4)))
     static uint32_t Divide(uint32_t a, uint32_t b)
     {
         libdivide::divider<uint32_t> fast_d(b);

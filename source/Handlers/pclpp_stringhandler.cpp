@@ -5,10 +5,7 @@
 void CreateString(PCLPP_MemoryReference& mr, std::string string, PCLPP* pclpp)
 {
     PCLPP_Block& b = pclpp->blocks.back();
-    b.assembly.MOVRImm(0, mr.index);
-    b.assembly.MOVRImm(1, mr.partofthis);
-    b.assembly.CallFunction((uint32_t)pclpp_std::GetLocal);
-    b.assembly.CallFunction((uint32_t)pclpp_std::Free); // free the address of variable
+    pclpp->FreeMemoryRef(mr);
     b.assembly.MOVRImm(0, string.length()+1); // +1 for null terminator
     b.assembly.MOVRImm(1, 1); // (sizeof char)
     b.assembly.CallFunction((uint32_t)pclpp_std::Calloc); // r0: address
