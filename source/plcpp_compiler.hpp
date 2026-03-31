@@ -502,7 +502,7 @@ public:
         }
     }
 
-    void FreeMemoryRef(MemoryReference& mrr)
+    void FreeMemoryRef(PCLPP_MemoryReference& mrr)
     {
         blocks.back().assembly.MOVRImm(0, mrr.index);
         blocks.back().assembly.MOVRImm(1, mrr.partofthis);
