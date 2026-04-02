@@ -23,7 +23,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     if (rightSideMRName.length() == 1 && PCLPP->tokenizer.IsSeperate(rightSideMRName[0]))
     {
         operand += rightSideMRName;
-        goto rightSideMRName;
+        goto rightP;
     }
     bool rightPointer = false;
     std::string pp = PCLPP->tokenizer.tokens.Advance(); // skip paranthesis
