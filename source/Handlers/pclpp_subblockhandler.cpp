@@ -10,7 +10,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     std::string leftSideMRName = PCLPP->tokenizer.tokens.Advance();
     bool leftPointer = false;
     std::string operand;
-    leftP;
+    leftP:
     operand = PCLPP->tokenizer.tokens.Advance();
     if (operand == "*")
     {
@@ -49,7 +49,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     }
 
     PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
-    sbp.codePoint = b.assembly.size();
+    sbp.codePoint = b.assembly.code.size();
 }
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
