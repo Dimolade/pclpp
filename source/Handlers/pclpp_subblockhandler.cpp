@@ -52,7 +52,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     sbp.codePoint = b.assembly.code.size();
 }
 
-void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
+void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (PCLPP->inBlock) return;
     if (token == "end")
