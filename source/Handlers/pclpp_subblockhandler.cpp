@@ -5,7 +5,16 @@
 void IfHandler(PCLPP* PCLPP, const std::string& token)
 {
     PCLPP_Block& b = PCLPP->blocks.back();
-    PCLPP->tokenizer.tokens.Advance(); // skip paranthesis
+    std::string next;
+    bool not = false;
+    nextP:
+    next = PCLPP->tokenizer.tokens.Advance(); // skip paranthesis
+    if (next == "not")
+    {
+        next = PCLPP->tokenizer.tokens.Advance();
+        not = !not;
+        goto nextP;
+    }
 
     std::string leftSideMRName = PCLPP->tokenizer.tokens.Advance();
     bool leftPointer = false;
@@ -59,9 +68,10 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     else if (operand == "!=")
     {
         b.assembly.CMPRR(5,6); // not equals
-        sbp.not = true;
+        not = !not;
     }
 
+    sbp.not = not;
     sbp.codePoint = b.assembly.code.size();
     PCLPP->subBlockLayer++;
 }
