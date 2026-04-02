@@ -54,7 +54,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
 
 void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
-    if (PCLPP->inBlock) return;
+    if (!PCLPP->inBlock) return;
     if (token == "end")
     {
         std::vector<uint8_t> codeSection;
