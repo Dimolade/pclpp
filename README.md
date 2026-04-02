@@ -16,7 +16,7 @@ The assemblinizer.hpp and assemblinizer_jit.h file work together to run the code
 This repo for example uses Kynex7510's [CTRL](https://github.com/kynex7510/CTRL) library. <br>
 <br>
 Heres an example on how to run it using the CTRL library:
-`int out = Assemblinizer::Run(plcpp.GetMainAssembly());`
+`int out = PCLPP_Assembly_Runner::Run(plcpp.GetMainAssembly());`
 
 # Syntax
 ---
