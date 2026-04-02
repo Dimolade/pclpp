@@ -17,7 +17,14 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
         leftPointer = true;
         goto leftP;
     }
-    std::string rightSideMRName = PCLPP->tokenizer.tokens.Advance();
+    std::string rightSideMRName;
+    rightP:
+    rightSideMRName = PCLPP->tokenizer.tokens.Advance();
+    if (rightSideMRName.length() == 1 && PCLPP->tokenizer.IsSeperate(rightSideMRName[0]))
+    {
+        operand += rightSideMRName;
+        goto rightSideMRName;
+    }
     bool rightPointer = false;
     std::string pp = PCLPP->tokenizer.tokens.Advance(); // skip paranthesis
     if (pp == "*")
