@@ -50,16 +50,18 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
         b.assembly.MOVRR(startReg+i, 0); // r0: value or address
     }
 
+    PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
+
     if (operand == "==") // funny because == == get it
     {
         b.assembly.CMPRR(5,6); // equals
     }
     else if (operand == "!=")
     {
-        b.assembly.CMNRR(5,6); // not equals
+        b.assembly.CMPRR(5,6); // not equals
+        sbp.not = true;
     }
 
-    PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
     sbp.codePoint = b.assembly.code.size();
     PCLPP->subBlockLayer++;
 }
@@ -79,7 +81,7 @@ void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         b.assembly.code.erase(b.assembly.code.begin()+sbp.codePoint,b.assembly.code.end());
         b.assembly.MOVRImm(0, codeSection.size()-4);
-        b.assembly.ADDRR(15,0,15,2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
+        b.assembly.ADDRR(15,0,15, sbp.not ? 1 : 2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
         b.assembly.code.reserve(b.assembly.code.size()+codeSection.size());
         b.assembly.code.insert(b.assembly.code.end(), codeSection.begin(), codeSection.end());
         b.subPoints.pop_back();
