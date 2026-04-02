@@ -592,33 +592,37 @@ public:
         }
     }
 
-    void LoadByteClass(PCLPP_Class& c, PCLPP_Assembly& assembly, PCLPP_Block& b, uint32_t value = 0)
+    void LoadByteClass(PCLPP_Class& c, PCLPP_Assembly& assembly, PCLPP_Block& b, uint32_t value = 0, bool intent = false, bool pointer = false)
     {
         if (!c.isByteClass) return;
-        assembly.MOVRImm(0, c.byteSize);
-        assembly.CallFunction((uint32_t)pclpp_std::Malloc);
-        assembly.MOVRR(10, 0);
-        assembly.PUSH(1 << 10);
-        NewLocal(b);
-        assembly.POP(1 << 10);
-        assembly.MOVRR(0,10);
-        assembly.PUSH(1 << 10);
-        assembly.MOVRImm(1, value);
-        uint8_t size = c.byteSize;
-        switch (size)
+        if (!pointer)
         {
-            case 1:
-            assembly.CallFunction((uint32_t)pclpp_std::Write8);
-            break;
-            case 2:
-            assembly.CallFunction((uint32_t)pclpp_std::Write16);
-            break;
-            case 4:
-            assembly.CallFunction((uint32_t)pclpp_std::Write32);
-            break;
+            if (intent)
+            {
+                assembly.MOVRR(1, 0);
+                assembly.PUSH(1 << 1);
+            }
+            assembly.MOVRImm(0, c.byteSize);
+            assembly.CallFunction((uint32_t)pclpp_std::Malloc);
+            assembly.MOVRR(10, 0);
+            assembly.PUSH(1 << 10);
         }
-        assembly.POP(1 << 10);
-        assembly.MOVRR(0,10);
+        NewLocal(b);
+        if (!pointer)
+        {
+            assembly.POP(1 << 10);
+            assembly.MOVRR(0,10);
+            assembly.PUSH(1 << 10);
+            assembly.MOVRImm(1, value);
+            if (intent)
+            {
+                assembly.POP(1 << 1);
+            }
+            uint8_t size = c.byteSize;
+            WriteASM(size, b);
+            assembly.POP(1 << 10);
+            assembly.MOVRR(0,10);
+        }
     }
 
     void LoadClassAsAddress(PCLPP_Class& c, PCLPP_Assembly& assembly, PCLPP_Block& b)

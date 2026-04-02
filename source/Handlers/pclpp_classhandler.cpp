@@ -83,7 +83,34 @@ void LoadClassRecursive(PCLPP* PCLPP, PCLPP_Class& c, PCLPP_Block& b, PCLPP_Memo
 void HandleNew(PCLPP* PCLPP, const std::string& token)
 {
     std::string Class = PCLPP->tokenizer.tokens.Advance();
-    std::string name = PCLPP->tokenizer.tokens.Advance();
+    std::string name;
+    bool intent = false;
+    bool pointer = false;
+    part:
+    name = PCLPP->tokenizer.tokens.Advance();
+    if (name == "intent")
+    {
+        intent = true;
+        goto part;
+    }
+    else if (name == "pointer")
+    {
+        pointer = true;
+        goto part;
+    }
+    std::string next = PCLPP->tokenizer.tokens.Advance();
+    if (next == "at")
+    {
+        uint16_t index = stoi(PCLPP->tokenizer.tokens.Advance());
+        PCLPP_Block& b = PCLPP->blocks.back();
+        PCLPP_Class& c = PCLPP->GetClass(Class);
+        PCLPP_MemoryReference& parent = b.memoryReferences.emplace_back();
+        parent.name = name;
+        parent.index = index;
+        parent.type = c.name;
+        parent.size = c.byteSize;
+        return;
+    }
     PCLPP_Block& b = PCLPP->blocks.back();
     PCLPP_Class& c = PCLPP->GetClass(Class);
     PCLPP_MemoryReference& parent = b.memoryReferences.emplace_back();
@@ -93,7 +120,7 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
         parent.size = c.byteSize;
         parent.index = PCLPP->localVarCount;
         parent.type = c.name;
-        PCLPP->LoadByteClass(c, b.assembly, b, 0);
+        PCLPP->LoadByteClass(c, b.assembly, b, 0, intent, pointer);
         return;
     }
     else

@@ -247,7 +247,7 @@ public:
 
     }
 
-    inline void ADDRR(uint8_t target, uint8_t reg, uint8_t with = 16)
+    inline void ADDRR(uint8_t target, uint8_t reg, uint8_t with = 16, bool eq = false)
     {
         uint8_t rn, rm;
 
@@ -258,6 +258,8 @@ public:
             rn = target;
             rm = reg;
         }
+
+        uint32_t base = eq ? 0x00800000 : 0xE0800000;
 
         emit32(0xE0800000 |
             ((rn & 0xF) << 16) |

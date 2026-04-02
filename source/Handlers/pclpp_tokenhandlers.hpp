@@ -8,6 +8,7 @@
 #include "pclpp_classfunctionhandler.h"
 #include "pclpp_treathandler.h"
 #include "pclpp_stringhandler.h"
+#include "pclpp_subblockhandler.h"
 #include <memory>
 
 class PCLPP_TokenHandlers
@@ -25,6 +26,7 @@ public:
         handlers.push_back(std::make_unique<PCLPP_ClassFunctionHandler>());
         handlers.push_back(std::make_unique<PCLPP_TreatHandler>());
         handlers.push_back(std::make_unique<PCLPP_StringHandler>());
+        handlers.push_back(std::make_unique<PCLPP_SubBlockHandler>());
     }
 
     void Call(PCLPP* PCLPP, std::string token)
