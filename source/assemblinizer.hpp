@@ -261,7 +261,7 @@ public:
 
     }
 
-    inline void ADDRR(uint8_t target, uint8_t reg, uint8_t with = 16, bool eq = false)
+    inline void ADDRR(uint8_t target, uint8_t reg, uint8_t with = 16, uint8_t eqMode = 0)
     {
         uint8_t rn, rm;
 
@@ -273,7 +273,17 @@ public:
             rm = reg;
         }
 
-        uint32_t base = eq ? 0x00800000 : 0xE0800000;
+        uint32_t base = 0xE0800000;
+
+        switch (eqMode)
+        {
+            case 1:
+            base = 0x00800000;
+            break;
+            case 2:
+            base = 0x10800000;
+            break;
+        }
 
         emit32(0xE0800000 |
             ((rn & 0xF) << 16) |

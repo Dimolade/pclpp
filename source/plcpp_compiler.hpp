@@ -158,11 +158,21 @@ public:
     std::vector<PCLPP_MemoryReference> children;
 };
 
+class PCLPP_SubBlockPoint
+{
+public:
+    uint32_t codePoint = 0;
+    uint32_t size;
+    std::string name = "";
+    bool isPoint = false;
+};
+
 class PCLPP_Block
 {
 public:
     PCLPP_Block_Type type = PCLPP_Block_Type::Function;
     std::vector<PCLPP_MemoryReference> memoryReferences;
+    std::vector<PCLPP_SubBlockPoint> subPoints;
     PCLPP_Assembly assembly;
     uint16_t classvarcount = 0;
     std::vector<uint16_t> myLocals;
