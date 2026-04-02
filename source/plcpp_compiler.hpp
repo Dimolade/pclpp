@@ -609,8 +609,8 @@ public:
         {
             if (intent)
             {
-                assembly.MOVRR(1, 0);
-                assembly.PUSH(1 << 1);
+                assembly.MOVRR(9, 0);
+                assembly.PUSH(1 << 9);
             }
             assembly.MOVRImm(0, c.byteSize);
             assembly.CallFunction((uint32_t)pclpp_std::Malloc);
@@ -626,7 +626,8 @@ public:
             assembly.MOVRImm(1, value);
             if (intent)
             {
-                assembly.POP(1 << 1);
+                assembly.POP(1 << 9);
+                assembly.MOVRR(1,9);
             }
             uint8_t size = c.byteSize;
             WriteASM(size, b);
