@@ -99,6 +99,7 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
         goto part;
     }
     std::string next = PCLPP->tokenizer.tokens.Advance();
+    uint32_t value = 0;
     if (next == "at")
     {
         uint16_t index = stoi(PCLPP->tokenizer.tokens.Advance());
@@ -109,7 +110,12 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
         parent.index = index;
         parent.type = c.name;
         parent.size = c.byteSize;
+        parent.free = false;
         return;
+    }
+    else if (next == "=")
+    {
+        value = stoi(PCLPP->tokenizer.tokens.Advance());
     }
     PCLPP_Block& b = PCLPP->blocks.back();
     PCLPP_Class& c = PCLPP->GetClass(Class);
