@@ -50,9 +50,13 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
         b.assembly.MOVRR(startReg+i, 0); // r0: value or address
     }
 
-    if (operand == "==") // funny
+    if (operand == "==") // funny because == == get it
     {
-        b.assembly.CMPRR(5,6); // boom
+        b.assembly.CMPRR(5,6); // equals
+    }
+    else if (operand == "!=")
+    {
+        b.assembly.CMNRR(5,6); // not equals
     }
 
     PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
