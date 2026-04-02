@@ -203,6 +203,13 @@ public:
             (rm & 0xF));
     }
 
+    inline void CMNRR(uint8_t rn, uint8_t rm)
+    {   
+        emit32(0xE1700000 |
+            ((rn & 0xF) << 16) |
+            (rm & 0xF));
+    }
+
     inline void MOVW(uint8_t reg, uint16_t imm)
     {
         uint32_t imm4  = (imm >> 12) & 0xF;
