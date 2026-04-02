@@ -43,7 +43,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
         b.assembly.MOVRR(0, startReg+i); // r0: value or address
     }
 
-    if (op == "==") // funny
+    if (operand == "==") // funny
     {
         b.assembly.CMPRR(5,6); // boom
     }
@@ -64,7 +64,7 @@ void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         {
             codeSection.push_back(b.assembly.code[i]);
         }
-        b.assembly.code.erase(sbp.codePoint,b.assembly.code.size());
+        b.assembly.code.erase(b.assembly.code.begin()+sbp.codePoint,b.assembly.code.end());
         b.assembly.MOVRImm(0, codeSection.size()-4);
         b.assembly.ADDRR(15,0,15,2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
         b.assembly.code.reserve(b.assembly.code.size()+codeSection.size());
