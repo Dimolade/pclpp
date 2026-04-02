@@ -126,7 +126,7 @@ void HandleNew(PCLPP* PCLPP, const std::string& token)
         parent.size = c.byteSize;
         parent.index = PCLPP->localVarCount;
         parent.type = c.name;
-        PCLPP->LoadByteClass(c, b.assembly, b, 0, intent, pointer);
+        PCLPP->LoadByteClass(c, b.assembly, b, value, intent, pointer);
         return;
     }
     else
