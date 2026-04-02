@@ -250,6 +250,7 @@ public:
     uint16_t localVarCount = 0;
     uint32_t codepageamount = 0;
     uint16_t currentThisOffset = 0;
+    uint8_t subBlockLayer = 0;
 
     void AddLibrary(PCLPP_Library l)
     {

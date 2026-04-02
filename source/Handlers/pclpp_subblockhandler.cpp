@@ -61,13 +61,15 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
 
     PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
     sbp.codePoint = b.assembly.code.size();
+    PCLPP->subBlockLayer++;
 }
 
 void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
     if (!PCLPP->inBlock) return;
-    if (token == "end")
+    if (token == "}" && PCLPP->subBlockLayer > 0)
     {
+        PCLPP->subBlockLayer--;
         std::vector<uint8_t> codeSection;
         PCLPP_Block& b = PCLPP->blocks.back();
         PCLPP_SubBlockPoint& sbp = b.subPoints.back();

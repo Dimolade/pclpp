@@ -6,7 +6,7 @@
 
 void PCLPP_MainHandler::OnToken(PCLPP* PCLPP, const std::string& token)
 {
-    if (token == "}" && PCLPP->inBlock)
+    if (token == "}" && PCLPP->inBlock && PCLPP->subBlockLayer == 0)
     {
         if (PCLPP->blocks.back().noclean == false)
         {
