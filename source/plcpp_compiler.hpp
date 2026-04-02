@@ -165,7 +165,7 @@ public:
     uint32_t size;
     std::string name = "";
     bool isPoint = false;
-    bool not = false;
+    bool opnot = false;
 };
 
 class PCLPP_Block

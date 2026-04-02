@@ -6,13 +6,12 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
 {
     PCLPP_Block& b = PCLPP->blocks.back();
     std::string next;
-    bool not = false;
+    bool opnot = false;
     nextP:
     next = PCLPP->tokenizer.tokens.Advance(); // skip paranthesis
     if (next == "not")
     {
-        next = PCLPP->tokenizer.tokens.Advance();
-        not = !not;
+        opnot = !opnot;
         goto nextP;
     }
 
@@ -68,10 +67,10 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     else if (operand == "!=")
     {
         b.assembly.CMPRR(5,6); // not equals
-        not = !not;
+        opnot = !opnot;
     }
 
-    sbp.not = not;
+    sbp.opnot = opnot;
     sbp.codePoint = b.assembly.code.size();
     PCLPP->subBlockLayer++;
 }
@@ -91,7 +90,7 @@ void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         b.assembly.code.erase(b.assembly.code.begin()+sbp.codePoint,b.assembly.code.end());
         b.assembly.MOVRImm(0, codeSection.size()-4);
-        b.assembly.ADDRR(15,0,15, sbp.not ? 1 : 2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
+        b.assembly.ADDRR(15,0,15, sbp.opnot ? 1 : 2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
         b.assembly.code.reserve(b.assembly.code.size()+codeSection.size());
         b.assembly.code.insert(b.assembly.code.end(), codeSection.begin(), codeSection.end());
         b.subPoints.pop_back();
