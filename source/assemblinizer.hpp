@@ -285,7 +285,7 @@ public:
             break;
         }
 
-        emit32(0xE0800000 |
+        emit32(base |
             ((rn & 0xF) << 16) |
             ((target & 0xF) << 12) |
             (rm & 0xF));
