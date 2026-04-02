@@ -40,7 +40,7 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
         {
             PCLPP->ReadASM(now.size, b);
         }
-        b.assembly.MOVRR(0, startReg+i); // r0: value or address
+        b.assembly.MOVRR(startReg+i, 0); // r0: value or address
     }
 
     if (operand == "==") // funny
