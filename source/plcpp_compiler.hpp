@@ -622,13 +622,13 @@ public:
         {
             assembly.POP(1 << 10);
             assembly.MOVRR(0,10);
-            assembly.PUSH(1 << 10);
             assembly.MOVRImm(1, value);
             if (intent)
             {
                 assembly.POP(1 << 9);
                 assembly.MOVRR(1,9);
             }
+            assembly.PUSH(1 << 10);
             uint8_t size = c.byteSize;
             WriteASM(size, b);
             assembly.POP(1 << 10);
