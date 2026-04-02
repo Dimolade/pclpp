@@ -23,6 +23,39 @@
 
 #define assemblinizer_littleEndian
 
+class PCLPP_ASM_EQMODE
+{
+public:
+    enum EQMODE {NONE, EQUAL, NOTEQUAL, GREATER, LESS, GREATEREQUAL, LESSEQUAL};
+    static uint8_t Invert(uint8_t in)
+    {
+        switch (in)
+        {
+            case EQUAL:
+            return NOTEQUAL;
+
+            case NOTEQUAL:
+            return EQUAL;
+
+            case GREATER:
+            return LESSEQUAL;
+
+            case LESS:
+            return GREATEREQUAL;
+
+            case GREATEREQUAL:
+            return LESS;
+
+            case LESSEQUAL:
+            return GREATER;
+
+            case NONE:
+            return NONE;
+        }
+        return in;
+    }
+};
+
 struct PCLPP_Assembly_Map_Result
 {
     bool success;
@@ -277,11 +310,23 @@ public:
 
         switch (eqMode)
         {
-            case 1:
+            case PCLPP_ASM_EQMODE::NOTEQUAL:
+            base = 0x10800000;
+            break;
+            case PCLPP_ASM_EQMODE::EQUAL:
             base = 0x00800000;
             break;
-            case 2:
-            base = 0x10800000;
+            case PCLPP_ASM_EQMODE::GREATER:
+            base = 0xC0800000;
+            break;
+            case PCLPP_ASM_EQMODE::LESS:
+            base = 0xB0800000;
+            break;
+            case PCLPP_ASM_EQMODE::GREATEREQUAL:
+            base = 0xA0800000;
+            break;
+            case PCLPP_ASM_EQMODE::LESSEQUAL:
+            base = 0xD0800000;
             break;
         }
 

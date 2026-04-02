@@ -164,6 +164,7 @@ public:
     uint32_t codePoint = 0;
     uint32_t size;
     std::string name = "";
+    uint8_t opMode = 0;
     bool isPoint = false;
     bool opnot = false;
 };

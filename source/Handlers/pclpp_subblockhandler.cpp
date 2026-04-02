@@ -59,15 +59,31 @@ void IfHandler(PCLPP* PCLPP, const std::string& token)
     }
 
     PCLPP_SubBlockPoint& sbp = b.subPoints.emplace_back();
+    b.assembly.CMPRR(5,6);
 
     if (operand == "==") // funny because == == get it
     {
-        b.assembly.CMPRR(5,6); // equals
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::EQUAL);
     }
     else if (operand == "!=")
     {
-        b.assembly.CMPRR(5,6); // not equals
-        opnot = !opnot;
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::NOTEQUAL);
+    }
+    else if (operand == ">=")
+    {
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::GREATEREQUAL);
+    }
+    else if (operand == "<=")
+    {
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::LESSEQUAL);
+    }
+    else if (operand == ">")
+    {
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::GREATER);
+    }
+    else if (operand == "<")
+    {
+        sbp.opMode = PCLPP_ASM_EQMODE::Invert(PCLPP_ASM_EQMODE::LESS);
     }
 
     sbp.opnot = opnot;
@@ -90,7 +106,7 @@ void PCLPP_SubBlockHandler::OnToken(PCLPP* PCLPP, const std::string& token)
         }
         b.assembly.code.erase(b.assembly.code.begin()+sbp.codePoint,b.assembly.code.end());
         b.assembly.MOVRImm(0, codeSection.size()-4);
-        b.assembly.ADDRR(15,0,15, sbp.opnot ? 1 : 2); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
+        b.assembly.ADDRR(15,0,15, sbp.opnot ? PCLPP_ASM_EQMODE::Invert(sbp.opMode) : sbp.opMode); // ADDNE r15, r0, r15 ; this skips the instructions if the if condition isnt met
         b.assembly.code.reserve(b.assembly.code.size()+codeSection.size());
         b.assembly.code.insert(b.assembly.code.end(), codeSection.begin(), codeSection.end());
         b.subPoints.pop_back();
